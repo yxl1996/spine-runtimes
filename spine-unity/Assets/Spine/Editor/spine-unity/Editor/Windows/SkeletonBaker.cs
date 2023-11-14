@@ -124,6 +124,7 @@ namespace Spine.Unity.Editor {
 					if (!clip.HasFlag(HideFlags.HideInHierarchy)) {
 						if (unityAnimationClipTable.ContainsKey(clip.name)) {
 							Debug.LogWarningFormat("Duplicate AnimationClips were found named {0}", clip.name);
+							continue;
 						}
 						unityAnimationClipTable.Add(clip.name, clip);
 					}
