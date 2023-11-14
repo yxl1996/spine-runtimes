@@ -218,6 +218,11 @@ namespace Spine.Unity {
 			readonly Dictionary<AnimationClip, int> clipNameHashCodeTable = new Dictionary<AnimationClip, int>(AnimationClipEqualityComparer.Instance);
 			readonly List<Animation> previousAnimations = new List<Animation>();
 
+#if UNITY_EDITOR
+			public Dictionary<int, Spine.Animation> AnimationTable => animationTable;
+			public Dictionary<int, Spine.Animation> CacheAnimationTable => cacheAnimationTable;
+#endif
+	
 			protected class ClipInfos {
 				public bool isInterruptionActive = false;
 				public bool isLastFrameOfInterruption = false;
