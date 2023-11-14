@@ -16,7 +16,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton" {
 		Tags { "RenderPipeline" = "UniversalPipeline" "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
 		LOD 100
 		Cull Off
-		ZWrite Off
+		ZWrite On
 		Blend One OneMinusSrcAlpha
 
 		Stencil {
@@ -28,7 +28,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton" {
 		Pass {
 			Tags { "LightMode" = "Universal2D" }
 
-			ZWrite Off
+			ZWrite On
 			Cull Off
 			Blend One OneMinusSrcAlpha
 
@@ -50,7 +50,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton" {
 			#pragma shader_feature _ _STRAIGHT_ALPHA_INPUT
 			#pragma shader_feature _TINT_BLACK_ON
 			#pragma vertex vert
-			#pragma fragment frag
+			#pragma fragment frag_custom
 
 			#undef LIGHTMAP_ON
 
@@ -60,6 +60,20 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton" {
 			#define fixed half
 			#include "../Include/Spine-Input-URP.hlsl"
 			#include "../Include/Spine-Skeleton-ForwardPass-URP.hlsl"
+
+			half4 frag_custom(VertexOutput i) : SV_Target{
+				float4 texColor = tex2D(_MainTex, i.uv0);
+			#if defined(_TINT_BLACK_ON)
+				return fragTintedColor(texColor, i.darkColor, i.color, _Color.a, _Black.a);
+			#else
+				#if defined(_STRAIGHT_ALPHA_INPUT)
+				texColor.rgb *= texColor.a;
+				#endif
+				float4 finalColor = texColor * i.color;
+				clip(finalColor - 0.01);
+				return finalColor;
+			#endif
+			}
 			ENDHLSL
 		}
 	}
