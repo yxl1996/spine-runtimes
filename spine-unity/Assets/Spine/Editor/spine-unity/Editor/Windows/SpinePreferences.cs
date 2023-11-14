@@ -45,7 +45,7 @@ using UnityEngine;
 
 namespace Spine.Unity.Editor {
 
-	public class SpinePreferences : ScriptableObject {
+	public partial class SpinePreferences : ScriptableObject {
 
 #if NEW_PREFERENCES_SETTINGS_PROVIDER
 		static int wasPreferencesDirCreated = 0;

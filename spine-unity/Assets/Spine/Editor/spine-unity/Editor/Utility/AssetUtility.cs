@@ -693,7 +693,7 @@ namespace Spine.Unity.Editor {
 				string materialPath = materialDirectory + "/" + primaryName + "_" + pageName + ".mat";
 				Material material = (Material)AssetDatabase.LoadAssetAtPath(materialPath, typeof(Material));
 				if (material == null) {
-					Shader defaultShader = GetDefaultShader();
+					Shader defaultShader = AssetUtilityExt.GetDefaultShader(assetPath);
 					material = defaultShader != null ? new Material(defaultShader) : null;
 					if (material) {
 						ApplyPMAOrStraightAlphaSettings(material, SpineEditorUtilities.Preferences.textureSettingsReference);
@@ -890,7 +890,7 @@ namespace Spine.Unity.Editor {
 				Material material = AssetDatabase.LoadAssetAtPath<Material>(materialPath);
 
 				if (material == null) {
-					Shader defaultShader = GetDefaultShader();
+					Shader defaultShader = AssetUtilityExt.GetDefaultShader(assetPath);
 					material = defaultShader != null ? new Material(defaultShader) : null;
 					ApplyPMAOrStraightAlphaSettings(material, SpineEditorUtilities.Preferences.textureSettingsReference);
 					AssetDatabase.CreateAsset(material, materialPath);
