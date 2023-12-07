@@ -1,46 +1,83 @@
 ﻿using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 namespace Spine.Unity.Editor
 {
     public class AssetUtilityExt
     {
-        public static Shader GetDefaultShader(string assetFolderPath)
+        public static Material GetDefaultMaterial(string assetFolderPath)
         {
-            Shader shader = SpineEditorUtilities.Preferences.GetShader(assetFolderPath);
+            Material templateMaterial = SpineEditorUtilities.Preferences.GetTemplateMaterial(assetFolderPath);
+            Material material = null;
 
-            if (shader == null)
-                shader = AssetUtility.GetDefaultShader();
+            if (templateMaterial != null)
+            {
+#if UNITY_2022_3_OR_NEWER
+                material = new Material(templateMaterial.shader)
+                {
+                    parent = templateMaterial
+                };
+#else
+                material = new Material(templateMaterial);
+#endif
+            }
 
-            return shader;
+            if (material == null)
+            {
+                Shader shader = AssetUtility.GetDefaultShader();
+                if (shader != null)
+                    material = new Material(shader);
+            }
+
+            return material;
         }
     }
 
     public partial class SpinePreferences
     {
-        public List<ShaderDir> MaterialShaderConfigs;
+        public List<MaterialDir> MaterialShaderConfigs;
 
-        public Shader GetShader(string path)
+        public Material GetTemplateMaterial(string path)
         {
-            foreach (ShaderDir config in MaterialShaderConfigs)
+            foreach (var config in MaterialShaderConfigs)
             {
                 foreach (string folderPath in config.FolderList)
                 {
                     if (path.StartsWith(folderPath))
                     {
-                        return config.Shader;
+                        return config.TemplateMaterial;
                     }
                 }
             }
 
             return null;
         }
+
+#if UNITY_2022_3_OR_NEWER
+        public void ApplyAllTemplateMaterials()
+        {
+            foreach (MaterialDir config in MaterialShaderConfigs)
+            {
+                foreach (string folder in config.FolderList)
+                {
+                    string[] guids = AssetDatabase.FindAssets("t:material", new[] {folder});
+                    foreach (string guid in guids)
+                    {
+                        string path = AssetDatabase.GUIDToAssetPath(guid);
+                        var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
+                        mat.parent = config.TemplateMaterial;
+                    }
+                }
+            }
+        }
+#endif
     }
 
     [System.Serializable]
-    public class ShaderDir
+    public class MaterialDir
     {
         public List<string> FolderList;
-        public Shader Shader;
+        public Material TemplateMaterial;
     }
 }
