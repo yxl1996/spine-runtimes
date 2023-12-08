@@ -667,9 +667,15 @@ namespace Spine.Unity {
 			bool materialsChanged = rendererBuffers.MaterialsChangedInLastUpdate();
 			if (updateTriangles) { // Check if the triangles should also be updated.
 				meshGenerator.FillTriangles(currentMesh);
-				meshRenderer.sharedMaterials = rendererBuffers.GetUpdatedSharedMaterialsArray();
+				Material[] sharedMaterials = rendererBuffers.GetUpdatedSharedMaterialsArray();
+				if (OnGetUpdatedSharedMaterials != null)
+					OnGetUpdatedSharedMaterials(sharedMaterials);
+				meshRenderer.sharedMaterials = sharedMaterials;
 			} else if (materialsChanged) {
-				meshRenderer.sharedMaterials = rendererBuffers.GetUpdatedSharedMaterialsArray();
+				Material[] sharedMaterials = rendererBuffers.GetUpdatedSharedMaterialsArray();
+				if (OnGetUpdatedSharedMaterials != null)
+					OnGetUpdatedSharedMaterials(sharedMaterials);
+				meshRenderer.sharedMaterials = sharedMaterials;
 			}
 			if (materialsChanged && (this.maskMaterials.AnyMaterialCreated)) {
 				this.maskMaterials = new SpriteMaskInteractionMaterials();
@@ -689,7 +695,7 @@ namespace Spine.Unity {
 #endif
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
-				HandleOnDemandLoading();
+				HandleOnCustomDemandLoading();
 #endif
 
 #if PER_MATERIAL_PROPERTY_BLOCKS
@@ -879,6 +885,25 @@ namespace Spine.Unity {
 						atlasAsset.RequireTexturesLoaded(meshRenderer.sharedMaterials[i], ref overrideMaterial);
 						if (overrideMaterial != null)
 							meshRenderer.sharedMaterials[i] = overrideMaterial;
+					}
+					atlasAsset.EndCustomTextureLoading();
+				}
+			}
+		}
+
+		public delegate void SkeletonRendererSharedMaterialDelegate (Material[] sharedMaterials);
+
+		public event SkeletonRendererSharedMaterialDelegate OnGetUpdatedSharedMaterials;
+
+		void HandleOnCustomDemandLoading()
+		{
+			foreach (AtlasAssetBase atlasAsset in skeletonDataAsset.atlasAssets) {
+				if (atlasAsset.TextureLoadingMode != AtlasAssetBase.LoadingMode.Normal) {
+					atlasAsset.BeginCustomTextureLoading();
+					var sharedMaterials = meshRenderer.sharedMaterials;
+					for (int i = 0, count = sharedMaterials.Length; i < count; ++i) {
+						Material overrideMaterial = null;
+						atlasAsset.RequireTexturesLoaded(sharedMaterials[i], ref overrideMaterial);
 					}
 					atlasAsset.EndCustomTextureLoading();
 				}
