@@ -277,7 +277,7 @@ namespace Spine.Unity {
 				}
 			}
 			if (material == null) {
-				Debug.LogError("Material with texture name \"" + name + "\" not found for atlas asset: " + atlasAsset.name, atlasAsset);
+				//Debug.LogError("Material with texture name \"" + name + "\" not found for atlas asset: " + atlasAsset.name, atlasAsset);
 				return;
 			}
 			page.rendererObject = material;

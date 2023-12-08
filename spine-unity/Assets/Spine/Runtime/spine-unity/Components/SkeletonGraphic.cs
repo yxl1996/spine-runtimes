@@ -1105,7 +1105,7 @@ namespace Spine.Unity {
 
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
-				HandleOnDemandLoading();
+				HandleOnCustomDemandLoading();
 #endif
 			bool assignAtCanvasRenderer = (assignMeshOverrideSingle == null || !disableMeshAssignmentOnOverride);
 			if (assignAtCanvasRenderer) {
