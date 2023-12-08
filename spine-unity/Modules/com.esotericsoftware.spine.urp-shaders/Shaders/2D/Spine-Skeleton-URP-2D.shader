@@ -8,6 +8,8 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton" {
 		_Black("    Dark Color", Color) = (0,0,0,0)
 		[HideInInspector] _StencilRef("Stencil Reference", Float) = 1.0
 		[Enum(UnityEngine.Rendering.CompareFunction)] _StencilComp("Stencil Comparison", Float) = 8 // Set to Always as default
+
+		[MaterialToggle] _ZWrite("ZWrite", Float) = 0
 	}
 
 	SubShader {
@@ -16,7 +18,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton" {
 		Tags { "RenderPipeline" = "UniversalPipeline" "Queue"="Transparent" "IgnoreProjector"="True" "RenderType"="Transparent" }
 		LOD 100
 		Cull Off
-		ZWrite On
+		ZWrite [_ZWrite]
 		Blend One OneMinusSrcAlpha
 
 		Stencil {
@@ -28,7 +30,7 @@ Shader "Universal Render Pipeline/2D/Spine/Skeleton" {
 		Pass {
 			Tags { "LightMode" = "Universal2D" }
 
-			ZWrite On
+			ZWrite [_ZWrite]
 			Cull Off
 			Blend One OneMinusSrcAlpha
 
