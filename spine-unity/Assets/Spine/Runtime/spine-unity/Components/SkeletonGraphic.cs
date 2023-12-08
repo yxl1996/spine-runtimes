@@ -987,7 +987,7 @@ namespace Spine.Unity {
 
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
-				HandleOnDemandLoading();
+				HandleOnCustomDemandLoading();
 #endif
 			if (assignTexture)
 				canvasRenderer.SetTexture(this.mainTexture);
@@ -1137,6 +1137,51 @@ namespace Spine.Unity {
 							atlasAsset.RequireTextureLoaded(textureItems[i], ref loadedTexture, null);
 							if (loadedTexture)
 								usedTextures.Items[i] = loadedTexture;
+						}
+					}
+					atlasAsset.EndCustomTextureLoading();
+				}
+			}
+		}
+
+		public delegate Material SkeletonGraphicMaterialReplaceDelegate (Material originalMaterial,Texture texture);
+
+		public event SkeletonGraphicMaterialReplaceDelegate OnDemandLoadingReplaceMaterial;
+
+		void HandleOnCustomDemandLoading () {
+			foreach (AtlasAssetBase atlasAsset in skeletonDataAsset.atlasAssets) {
+				if (atlasAsset.TextureLoadingMode != AtlasAssetBase.LoadingMode.Normal) {
+					atlasAsset.BeginCustomTextureLoading();
+
+					if (!this.allowMultipleCanvasRenderers) {
+						Texture loadedTexture = null;
+						atlasAsset.RequireTextureLoaded(this.mainTexture, ref loadedTexture, null);
+						if (loadedTexture)
+							this.baseTexture = loadedTexture;
+					} else {
+						if (OnDemandLoadingReplaceMaterial != null)
+						{
+							Material[] materialItems = usedMaterials.Items;
+							for (int i = 0, count = usedMaterials.Count; i < count; ++i)
+							{
+								materialItems[i] =
+									OnDemandLoadingReplaceMaterial(materialItems[i], usedTextures.Items[i]);
+								Material overrideMaterial = null;
+								atlasAsset.RequireTexturesLoaded(materialItems[i], ref overrideMaterial);
+								usedTextures.Items[i] = materialItems[i].mainTexture;
+								if (overrideMaterial != null)
+									materialItems[i] = overrideMaterial;
+							}
+						}
+						else
+						{
+							Texture[] textureItems = usedTextures.Items;
+							for (int i = 0, count = usedTextures.Count; i < count; ++i) {
+								Texture loadedTexture = null;
+								atlasAsset.RequireTextureLoaded(textureItems[i], ref loadedTexture, null);
+								if (loadedTexture)
+									usedTextures.Items[i] = loadedTexture;
+							}
 						}
 					}
 					atlasAsset.EndCustomTextureLoading();

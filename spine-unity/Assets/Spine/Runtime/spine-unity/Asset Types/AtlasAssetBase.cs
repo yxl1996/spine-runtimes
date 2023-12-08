@@ -56,6 +56,46 @@ namespace Spine.Unity {
 			set { onDemandTextureLoader = value; }
 		}
 
+#if UNITY_EDITOR
+		private int mCounter;
+		
+		private void OnEnable()
+		{
+			if (onDemandTextureLoader != null)
+			{
+				onDemandTextureLoader.TextureLoaded += OnTextureLoaded;
+				onDemandTextureLoader.TextureUnloaded += OnTextureUnloaded;
+			}	
+		}
+
+		private void OnDisable()
+		{
+			if (onDemandTextureLoader != null)
+			{
+				onDemandTextureLoader.TextureLoaded -= OnTextureLoaded;
+				onDemandTextureLoader.TextureUnloaded -= OnTextureUnloaded;
+			}
+		}
+		
+		private void OnTextureLoaded(OnDemandTextureLoader loader, Material material, int textureindex)
+		{
+			if (!Application.isPlaying)
+				return;
+
+			mCounter++;
+		}
+		
+		private void OnTextureUnloaded(OnDemandTextureLoader loader, Material material, int textureindex)
+		{
+			if (!Application.isPlaying)
+				return;
+
+			mCounter--;
+			if (mCounter == 0)
+				Debug.LogError("Unloaded All Texture Successful");
+		}
+#endif
+
 		public virtual void BeginCustomTextureLoading () {
 			if (onDemandTextureLoader)
 				onDemandTextureLoader.BeginCustomTextureLoading();

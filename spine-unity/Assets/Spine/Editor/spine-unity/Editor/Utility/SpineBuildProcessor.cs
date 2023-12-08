@@ -79,7 +79,7 @@ namespace Spine.Unity.Editor {
 				PreprocessSpinePrefabMeshes();
 #endif
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
-			PreprocessOnDemandTextureLoaders();
+			SpineBuildProcessorExt.PreprocessOnDemandTextureLoaders();
 #endif
 			PreprocessSpriteAtlases();
 		}
@@ -91,7 +91,7 @@ namespace Spine.Unity.Editor {
 				PostprocessSpinePrefabMeshes();
 #endif
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
-			PostprocessOnDemandTextureLoaders();
+			SpineBuildProcessorExt.PostprocessOnDemandTextureLoaders();
 #endif
 			PostprocessSpriteAtlases();
 		}
