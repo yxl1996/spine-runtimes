@@ -72,7 +72,7 @@ namespace Spine.Unity {
 	/// <typeparam name="TextureRequest">The implementation struct covering a single texture loading request,
 	/// derived from IOnDemandRequest</typeparam>
 	[System.Serializable]
-	public abstract class GenericOnDemandTextureLoader<TargetReference, TextureRequest> : OnDemandTextureLoader
+	public abstract class GenericOnDemandTextureLoader<TargetReference, TextureRequest> : OnDemandTextureCustomLoader
 		where TargetReference : ITargetTextureReference
 		where TextureRequest : IOnDemandRequest {
 

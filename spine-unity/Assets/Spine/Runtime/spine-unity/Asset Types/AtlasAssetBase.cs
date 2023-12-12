@@ -51,7 +51,7 @@ namespace Spine.Unity {
 			get { return textureLoadingMode; }
 			set { textureLoadingMode = value; }
 		}
-		public OnDemandTextureLoader OnDemandTextureLoader {
+		public OnDemandTextureCustomLoader OnDemandTextureLoader {
 			get { return onDemandTextureLoader; }
 			set { onDemandTextureLoader = value; }
 		}
@@ -77,7 +77,7 @@ namespace Spine.Unity {
 			}
 		}
 		
-		private void OnTextureLoaded(OnDemandTextureLoader loader, Material material, int textureindex)
+		private void OnTextureLoaded(OnDemandTextureCustomLoader loader, Material material, int textureindex)
 		{
 			if (!Application.isPlaying)
 				return;
@@ -85,14 +85,14 @@ namespace Spine.Unity {
 			mCounter++;
 		}
 		
-		private void OnTextureUnloaded(OnDemandTextureLoader loader, Material material, int textureindex)
+		private void OnTextureUnloaded(OnDemandTextureCustomLoader loader, Material material, int textureindex)
 		{
 			if (!Application.isPlaying)
 				return;
 
 			mCounter--;
 			if (mCounter == 0)
-				Debug.LogError("Unloaded All Texture Successful");
+				Debug.Log("Unloaded All Texture Successful");
 		}
 #endif
 
@@ -117,7 +117,7 @@ namespace Spine.Unity {
 		}
 
 		[SerializeField] protected LoadingMode textureLoadingMode = LoadingMode.Normal;
-		[SerializeField] protected OnDemandTextureLoader onDemandTextureLoader = null;
+		[SerializeField] protected OnDemandTextureCustomLoader onDemandTextureLoader = null;
 #endif
 	}
 }
