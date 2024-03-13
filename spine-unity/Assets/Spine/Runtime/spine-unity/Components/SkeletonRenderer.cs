@@ -364,6 +364,8 @@ namespace Spine.Unity {
 		#endregion
 
 		public delegate void SkeletonRendererDelegate (SkeletonRenderer skeletonRenderer);
+		public delegate void SkeletonRendererSharedMaterialDelegate (Material[] sharedMaterials);
+		public delegate void SkeletonRendererDemandLoadingDelegate(SkeletonRenderer skeletonRenderer);
 
 		/// <summary>OnRebuild is raised after the Skeleton is successfully initialized.</summary>
 		public event SkeletonRendererDelegate OnRebuild;
@@ -372,6 +374,10 @@ namespace Spine.Unity {
 		/// all materials have been updated.</summary>
 		public event SkeletonRendererDelegate OnMeshAndMaterialsUpdated;
 
+		public event SkeletonRendererSharedMaterialDelegate OnGetUpdatedSharedMaterials;
+
+		public event SkeletonRendererDemandLoadingDelegate OnCustomDemandLoading;
+		
 		public SkeletonDataAsset SkeletonDataAsset { get { return skeletonDataAsset; } } // ISkeletonComponent
 
 		#region Runtime Instantiation
@@ -704,7 +710,13 @@ namespace Spine.Unity {
 #endif
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
-				HandleOnCustomDemandLoading();
+			{
+
+				if (OnCustomDemandLoading != null)
+					OnCustomDemandLoading(this);
+				else
+					HandleOnDemandLoading();
+			}
 #endif
 
 #if PER_MATERIAL_PROPERTY_BLOCKS
@@ -895,29 +907,7 @@ namespace Spine.Unity {
 				if (atlasAsset.TextureLoadingMode != AtlasAssetBase.LoadingMode.Normal) {
 					atlasAsset.BeginCustomTextureLoading();
 					for (int i = 0, count = meshRenderer.sharedMaterials.Length; i < count; ++i) {
-						Material overrideMaterial = null;
-						atlasAsset.RequireTexturesLoaded(meshRenderer.sharedMaterials[i], ref overrideMaterial);
-						if (overrideMaterial != null)
-							meshRenderer.sharedMaterials[i] = overrideMaterial;
-					}
-					atlasAsset.EndCustomTextureLoading();
-				}
-			}
-		}
-
-		public delegate void SkeletonRendererSharedMaterialDelegate (Material[] sharedMaterials);
-
-		public event SkeletonRendererSharedMaterialDelegate OnGetUpdatedSharedMaterials;
-
-		void HandleOnCustomDemandLoading()
-		{
-			foreach (AtlasAssetBase atlasAsset in skeletonDataAsset.atlasAssets) {
-				if (atlasAsset.TextureLoadingMode != AtlasAssetBase.LoadingMode.Normal) {
-					atlasAsset.BeginCustomTextureLoading();
-					var sharedMaterials = meshRenderer.sharedMaterials;
-					for (int i = 0, count = sharedMaterials.Length; i < count; ++i) {
-						Material overrideMaterial = null;
-						atlasAsset.RequireTexturesLoaded(sharedMaterials[i], ref overrideMaterial);
+						atlasAsset.RequireTexturesLoaded(meshRenderer.sharedMaterials[i]);
 					}
 					atlasAsset.EndCustomTextureLoading();
 				}
