@@ -41,7 +41,6 @@ namespace Spine.Unity.Editor {
 
 		protected SerializedProperty autoReset;
 		protected SerializedProperty useCustomMixMode;
-		protected SerializedProperty optimizeBoneTimeline;
 		protected SerializedProperty layerMixModes;
 		protected SerializedProperty layerBlendModes;
 
@@ -50,7 +49,6 @@ namespace Spine.Unity.Editor {
 			SerializedProperty mecanimTranslator = serializedObject.FindProperty("translator");
 			autoReset = mecanimTranslator.FindPropertyRelative("autoReset");
 			useCustomMixMode = mecanimTranslator.FindPropertyRelative("useCustomMixMode");
-			optimizeBoneTimeline = mecanimTranslator.FindPropertyRelative("optimizeBoneTimeline");
 			layerMixModes = mecanimTranslator.FindPropertyRelative("layerMixModes");
 			layerBlendModes = mecanimTranslator.FindPropertyRelative("layerBlendModes");
 		}
@@ -71,8 +69,6 @@ namespace Spine.Unity.Editor {
 					EditorGUILayout.PropertyField(useCustomMixMode, new GUIContent("Custom MixMode",
 						"When disabled, the recommended MixMode is used according to the layer blend mode. Enable to specify a custom MixMode for each Mecanim layer."));
 
-					EditorGUILayout.PropertyField(optimizeBoneTimeline);
-					
 					if (useCustomMixMode.hasMultipleDifferentValues || useCustomMixMode.boolValue == true) {
 						DrawLayerSettings();
 						EditorGUILayout.Space();

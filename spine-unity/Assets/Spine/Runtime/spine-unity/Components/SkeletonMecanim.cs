@@ -79,6 +79,13 @@ namespace Spine.Unity {
 		[SerializeField] protected UpdateTiming updateTiming = UpdateTiming.InUpdate;
 		public UpdateTiming UpdateTiming { get { return updateTiming; } set { updateTiming = value; } }
 		#endregion
+		#region Ext
+
+		protected event UpdateBonesDelegate _UpdateWorldTransformOverride;
+
+		public event UpdateBonesDelegate UpdateWorldTransformOverride { add { _UpdateWorldTransformOverride += value; } remove { _UpdateWorldTransformOverride -= value; } }
+
+		#endregion
 
 		public override void Initialize (bool overwrite, bool quiet = false) {
 			if (valid && !overwrite)
@@ -93,7 +100,7 @@ namespace Spine.Unity {
 				return;
 
 			if (translator == null) translator = new MecanimTranslator();
-			translator.Initialize(GetComponent<Animator>(), this.skeleton);
+			translator.Initialize(GetComponent<Animator>(), this.skeletonDataAsset);
 			wasUpdatedAfterInit = false;
 
 			if (_OnAnimationRebuild != null)
@@ -172,6 +179,14 @@ namespace Spine.Unity {
 				_UpdateComplete(this);
 		}
 
+		protected override void UpdateWorldTransform(Skeleton.Physics physics)
+		{
+			if (_UpdateWorldTransformOverride != null)
+				_UpdateWorldTransformOverride(this);
+			else
+				base.UpdateWorldTransform(physics);
+		}
+
 		public override void LateUpdate () {
 			if (updateTiming == UpdateTiming.InLateUpdate && valid && translator != null && translator.Animator != null)
 				UpdateAnimation(Time.deltaTime);
@@ -200,7 +215,6 @@ namespace Spine.Unity {
 			#region Inspector
 			public bool autoReset = true;
 			public bool useCustomMixMode = true;
-			public bool optimizeBoneTimeline = false;
 			public MixMode[] layerMixModes = new MixMode[0];
 			public MixBlend[] layerBlendModes = new MixBlend[0];
 			#endregion
@@ -214,15 +228,17 @@ namespace Spine.Unity {
 			public enum MixMode { AlwaysMix, MixNext, Hard, Match }
 
 			readonly Dictionary<int, Spine.Animation> animationTable = new Dictionary<int, Spine.Animation>(IntEqualityComparer.Instance);
-			readonly Dictionary<int, Spine.Animation> cacheAnimationTable = new Dictionary<int, Spine.Animation>(IntEqualityComparer.Instance);
 			readonly Dictionary<AnimationClip, int> clipNameHashCodeTable = new Dictionary<AnimationClip, int>(AnimationClipEqualityComparer.Instance);
 			readonly List<Animation> previousAnimations = new List<Animation>();
+			
+			#region Ext
 
-#if UNITY_EDITOR
-			public Dictionary<int, Spine.Animation> AnimationTable => animationTable;
-			public Dictionary<int, Spine.Animation> CacheAnimationTable => cacheAnimationTable;
-#endif
-	
+			public System.Func<int,Animation> GetAnimationDelegate;
+
+			public Dictionary<AnimationClip, int> ClipNameHashCodeTable => clipNameHashCodeTable;
+
+			#endregion
+
 			protected class ClipInfos {
 				public bool isInterruptionActive = false;
 				public bool isLastFrameOfInterruption = false;
@@ -267,17 +283,14 @@ namespace Spine.Unity {
 					return layerNames;
 				}
 			}
-
-			private Skeleton skeleton;
 			
-			public void Initialize (Animator animator, Skeleton skeleton) {
+			public void Initialize (Animator animator, SkeletonDataAsset skeletonDataAsset) {
 				this.animator = animator;
-				this.skeleton = skeleton;
 				
 				previousAnimations.Clear();
 
 				animationTable.Clear();
-				SkeletonData data = skeleton.Data;
+				SkeletonData data = skeletonDataAsset.GetSkeletonData(true);
 				foreach (Animation a in data.Animations)
 					animationTable.Add(a.Name.GetHashCode(), a);
 
@@ -770,48 +783,15 @@ namespace Spine.Unity {
 					clipNameHashCode = clip.name.GetHashCode();
 					clipNameHashCodeTable.Add(clip, clipNameHashCode);
 				}
+
+				if (GetAnimationDelegate != null)
+				{
+					return GetAnimationDelegate(clipNameHashCode);
+				}
+				
 				Spine.Animation animation;
 				animationTable.TryGetValue(clipNameHashCode, out animation);
-				
-				if (optimizeBoneTimeline
-#if UNITY_EDITOR
-				    && Application.isPlaying
-#endif
-				)
-				{
-					if (!cacheAnimationTable.TryGetValue(clipNameHashCode, out var cacheAnimation))
-					{
-						cacheAnimation = NewBoneActiveAnimation(animation);
-						cacheAnimationTable.Add(clipNameHashCode, cacheAnimation);
-					}
-
-					animation = cacheAnimation;
-				}
-
 				return animation;
-			}
-
-			// Should Be Call When Bones Active Update
-			public void ClearCacheBoneActiveAnimation()
-			{
-				cacheAnimationTable.Clear();
-			}
-
-			private Animation NewBoneActiveAnimation(Animation source)
-			{
-				var timelines = new ExposedList<Timeline>();
-				foreach (Timeline timeline in source.Timelines)
-				{
-					if (timeline is IBoneTimeline boneTimeline)
-					{
-						Bone bone = skeleton.Bones.Items[boneTimeline.BoneIndex];
-						if (!bone.Active) continue;
-					}
-					
-					timelines.Add(timeline);
-				}
-
-				return new Animation(source.Name, timelines, source.Duration);
 			}
 
 			class AnimationClipEqualityComparer : IEqualityComparer<AnimationClip> {
