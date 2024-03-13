@@ -77,7 +77,7 @@ namespace Spine.Unity {
 			}
 		}
 		
-		private void OnTextureLoaded(OnDemandTextureCustomLoader loader, Material material, int textureindex)
+		private void OnTextureLoaded(OnDemandTextureCustomLoader loader, Material material)
 		{
 			if (!Application.isPlaying)
 				return;
@@ -85,7 +85,7 @@ namespace Spine.Unity {
 			mCounter++;
 		}
 		
-		private void OnTextureUnloaded(OnDemandTextureCustomLoader loader, Material material, int textureindex)
+		private void OnTextureUnloaded(OnDemandTextureCustomLoader loader, Material material)
 		{
 			if (!Application.isPlaying)
 				return;
@@ -106,9 +106,19 @@ namespace Spine.Unity {
 				onDemandTextureLoader.EndCustomTextureLoading();
 		}
 
-		public virtual void RequireTexturesLoaded (Material material, ref Material overrideMaterial) {
+		public virtual void RequireTexturesLoaded (Material material) {
 			if (onDemandTextureLoader)
-				onDemandTextureLoader.RequestLoadMaterialTextures(material, ref overrideMaterial);
+				onDemandTextureLoader.RequestLoadMaterialTextures(material);
+		}
+
+		public virtual void AddLoadedTextureRef(Texture placeHolderTexture) {
+			if (onDemandTextureLoader)
+				onDemandTextureLoader.AddLoadedTextureRef(placeHolderTexture);
+		}
+		
+		public virtual void RemoveLoadedTextureRef(Texture targetTexture) {
+			if (onDemandTextureLoader)
+				onDemandTextureLoader.RemoveLoadedTextureRef(targetTexture);
 		}
 
 		public virtual void RequireTextureLoaded (Texture placeholderTexture, ref Texture replacementTexture, System.Action<Texture> onTextureLoaded) {

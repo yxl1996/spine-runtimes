@@ -60,7 +60,9 @@ namespace Spine.Unity
         public abstract void BeginCustomTextureLoading();
         public abstract void EndCustomTextureLoading();
         public abstract bool HasPlaceholderAssigned(Material material);
-        public abstract void RequestLoadMaterialTextures(Material material, ref Material overrideMaterial);
+        public abstract void RequestLoadMaterialTextures(Material material);
+        public abstract void AddLoadedTextureRef(Texture targetTexture);
+        public abstract void RemoveLoadedTextureRef(Texture placeHolderTexture);
 
         public abstract void RequestLoadTexture(Texture placeholderTexture, ref Texture replacementTexture,
             System.Action<Texture> onTextureLoaded = null);
@@ -69,8 +71,7 @@ namespace Spine.Unity
 
         #region Event delegates
 
-        public delegate void TextureLoadDelegate(OnDemandTextureCustomLoader loader, Material material,
-            int textureIndex);
+        public delegate void TextureLoadDelegate(OnDemandTextureCustomLoader loader, Material material);
 
         protected event TextureLoadDelegate onTextureRequested;
         protected event TextureLoadDelegate onTextureLoaded;
@@ -94,22 +95,22 @@ namespace Spine.Unity
             remove { onTextureUnloaded -= value; }
         }
 
-        protected void OnTextureRequested(Material material, int textureIndex)
+        protected void OnTextureRequested(Material material)
         {
             if (onTextureRequested != null)
-                onTextureRequested(this, material, textureIndex);
+                onTextureRequested(this, material);
         }
 
-        protected void OnTextureLoaded(Material material, int textureIndex)
+        protected void OnTextureLoaded(Material material)
         {
             if (onTextureLoaded != null)
-                onTextureLoaded(this, material, textureIndex);
+                onTextureLoaded(this, material);
         }
 
-        protected void OnTextureUnloaded(Material material, int textureIndex)
+        protected void OnTextureUnloaded(Material material)
         {
             if (onTextureUnloaded != null)
-                onTextureUnloaded(this, material, textureIndex);
+                onTextureUnloaded(this, material);
         }
 
         #endregion

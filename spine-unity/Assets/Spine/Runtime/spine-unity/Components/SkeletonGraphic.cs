@@ -546,6 +546,7 @@ namespace Spine.Unity {
 
 		public delegate void SkeletonRendererDelegate (SkeletonGraphic skeletonGraphic);
 		public delegate void InstructionDelegate (SkeletonRendererInstruction instruction);
+		public delegate void SkeletonRendererDemandLoadingDelegate(SkeletonGraphic skeletonGraphic);
 
 		/// <summary>OnRebuild is raised after the Skeleton is successfully initialized.</summary>
 		public event SkeletonRendererDelegate OnRebuild;
@@ -559,6 +560,8 @@ namespace Spine.Unity {
 		/// <c>Rebuild</c>, so you may want to subscribe to <see cref="OnInstructionsPrepared"/> instead
 		/// from where you can issue such preparation calls.</summary>
 		public event SkeletonRendererDelegate OnMeshAndMaterialsUpdated;
+
+		public event SkeletonRendererDemandLoadingDelegate OnCustomDemandLoading;
 
 		protected Spine.AnimationState state;
 		public Spine.AnimationState AnimationState {
@@ -965,7 +968,12 @@ namespace Spine.Unity {
 
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
-				HandleOnCustomDemandLoading();
+			{
+				if (OnCustomDemandLoading != null)
+					OnCustomDemandLoading(this);
+				else
+					HandleOnDemandLoading();
+			}
 #endif
 			if (assignTexture)
 				canvasRenderer.SetTexture(this.mainTexture);
@@ -1075,7 +1083,12 @@ namespace Spine.Unity {
 
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
-				HandleOnCustomDemandLoading();
+			{
+				if (OnCustomDemandLoading != null)
+					OnCustomDemandLoading(this);
+				else
+					HandleOnDemandLoading();
+			}
 #endif
 			bool assignAtCanvasRenderer = (assignMeshOverrideSingle == null || !disableMeshAssignmentOnOverride);
 			if (assignAtCanvasRenderer) {
@@ -1107,51 +1120,6 @@ namespace Spine.Unity {
 							atlasAsset.RequireTextureLoaded(textureItems[i], ref loadedTexture, null);
 							if (loadedTexture)
 								usedTextures.Items[i] = loadedTexture;
-						}
-					}
-					atlasAsset.EndCustomTextureLoading();
-				}
-			}
-		}
-
-		public delegate Material SkeletonGraphicMaterialReplaceDelegate (Material originalMaterial,Texture texture);
-
-		public event SkeletonGraphicMaterialReplaceDelegate OnDemandLoadingReplaceMaterial;
-
-		void HandleOnCustomDemandLoading () {
-			foreach (AtlasAssetBase atlasAsset in skeletonDataAsset.atlasAssets) {
-				if (atlasAsset.TextureLoadingMode != AtlasAssetBase.LoadingMode.Normal) {
-					atlasAsset.BeginCustomTextureLoading();
-
-					if (!this.allowMultipleCanvasRenderers) {
-						Texture loadedTexture = null;
-						atlasAsset.RequireTextureLoaded(this.mainTexture, ref loadedTexture, null);
-						if (loadedTexture)
-							this.baseTexture = loadedTexture;
-					} else {
-						if (OnDemandLoadingReplaceMaterial != null)
-						{
-							Material[] materialItems = usedMaterials.Items;
-							for (int i = 0, count = usedMaterials.Count; i < count; ++i)
-							{
-								materialItems[i] =
-									OnDemandLoadingReplaceMaterial(materialItems[i], usedTextures.Items[i]);
-								Material overrideMaterial = null;
-								atlasAsset.RequireTexturesLoaded(materialItems[i], ref overrideMaterial);
-								usedTextures.Items[i] = materialItems[i].mainTexture;
-								if (overrideMaterial != null)
-									materialItems[i] = overrideMaterial;
-							}
-						}
-						else
-						{
-							Texture[] textureItems = usedTextures.Items;
-							for (int i = 0, count = usedTextures.Count; i < count; ++i) {
-								Texture loadedTexture = null;
-								atlasAsset.RequireTextureLoaded(textureItems[i], ref loadedTexture, null);
-								if (loadedTexture)
-									usedTextures.Items[i] = loadedTexture;
-							}
 						}
 					}
 					atlasAsset.EndCustomTextureLoading();
