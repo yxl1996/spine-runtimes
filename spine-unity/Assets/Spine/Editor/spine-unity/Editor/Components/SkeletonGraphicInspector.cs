@@ -68,7 +68,8 @@ namespace Spine.Unity.Editor {
 		SerializedProperty allowMultipleCanvasRenderers, separatorSlotNames, enableSeparatorSlots,
 			updateSeparatorPartLocation, updateSeparatorPartScale;
 		SerializedProperty raycastTarget, maskable;
-
+		SerializedProperty useCustomDemandLoading;
+		
 		readonly GUIContent UnscaledTimeLabel = new GUIContent("Unscaled Time",
 			"If enabled, AnimationState uses unscaled game time (Time.unscaledDeltaTime), " +
 				"running animations independent of e.g. game pause (Time.timeScale). " +
@@ -356,6 +357,8 @@ namespace Spine.Unity.Editor {
 				rect.x += 35f;
 				SpineInspectorUtility.ToggleLeft(rect, initialFlipY, SpineInspectorUtility.TempContent("Y", tooltip: "initialFlipY"));
 			}
+
+			EditorGUILayout.PropertyField(useCustomDemandLoading);
 
 			EditorGUILayout.Space();
 			EditorGUILayout.LabelField("Animation", EditorStyles.boldLabel);
