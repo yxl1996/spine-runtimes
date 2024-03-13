@@ -113,9 +113,9 @@ namespace Spine.Unity {
 			foreach (Material material in materials) {
 				if (material == null) continue;
 				isProblematic |= IsMaterialSetupProblematic(material, ref errorMessage);
-				if (renderer.zSpacing == 0) {
-					isProblematic |= IsZSpacingRequired(material, ref errorMessage);
-				}
+				//if (renderer.zSpacing == 0) {
+					//isProblematic |= IsZSpacingRequired(material, ref errorMessage);
+				//}
 				if (renderer.addNormals == false && RequiresMeshNormals(material)) {
 					isProblematic = true;
 					errorMessage += kAddNormalsMessage;
