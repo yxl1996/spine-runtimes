@@ -30,7 +30,7 @@
 using System;
 
 namespace Spine {
-	public class Skeleton {
+	public partial class Skeleton {
 		internal SkeletonData data;
 		internal ExposedList<Bone> bones;
 		internal ExposedList<Slot> slots;

@@ -276,6 +276,16 @@ namespace Spine {
 			d *= skeleton.scaleY;
 		}
 
+		public void UpdateTransform(float ia, float ib, float ic, float id, float iWorldX, float iWorldY)
+		{
+			a = ia;
+			b = ib;
+			c = ic;
+			d = id;
+			worldX = iWorldX;
+			worldY = iWorldY;
+		}
+
 		/// <summary>Sets this bone's local transform to the setup pose.</summary>
 		public void SetToSetupPose () {
 			BoneData data = this.data;

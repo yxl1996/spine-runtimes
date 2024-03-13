@@ -169,6 +169,9 @@ namespace Spine.Unity.Editor {
 			separatorSlotNames = so.FindProperty("separatorSlotNames");
 			separatorSlotNames.isExpanded = true;
 
+			// Custom
+			useCustomDemandLoading = so.FindProperty("useCustomDemandLoading");
+
 #if NEWPLAYMODECALLBACKS
 			EditorApplication.playModeStateChanged += OnPlaymodeChanged;
 #else
