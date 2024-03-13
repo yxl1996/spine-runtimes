@@ -157,7 +157,7 @@ namespace Spine.Unity {
 						return;
 					}
 
-					if (!string.IsNullOrEmpty(initialSkinName)) {
+					if (!string.IsNullOrEmpty(initialSkinName) && !Application.isPlaying) {
 						Skin skin = skeleton.Data.FindSkin(initialSkinName);
 						if (skin != null) {
 							if (skin == skeleton.Data.DefaultSkin)
