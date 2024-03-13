@@ -660,7 +660,9 @@ namespace Spine.Unity.Editor {
 				if (pageName == primaryName && pageFiles.Count == 1)
 					pageName = "Material";
 
-				string materialPath = assetPath + "/" + primaryName + "_" + pageName + ".mat";
+				string materialPath = Directory.Exists(assetPath + "/Materials")
+					? assetPath + "/Materials/" + primaryName + "_" + pageName + ".mat"
+					: assetPath + "/" + primaryName + "_" + pageName + ".mat";
 				Material material = (Material)AssetDatabase.LoadAssetAtPath(materialPath, typeof(Material));
 
 				if (material == null) {
