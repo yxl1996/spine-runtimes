@@ -236,6 +236,8 @@ namespace Spine.Unity {
 			public System.Func<int,Animation> GetAnimationDelegate;
 
 			public Dictionary<AnimationClip, int> ClipNameHashCodeTable => clipNameHashCodeTable;
+			
+			public Dictionary<int, Spine.Animation> AnimationTable => animationTable; 
 
 			#endregion
 
