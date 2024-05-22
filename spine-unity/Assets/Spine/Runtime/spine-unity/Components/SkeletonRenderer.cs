@@ -603,6 +603,11 @@ namespace Spine.Unity {
 			const bool doMeshOverride = false;
 			if (!meshRenderer.enabled) return;
 #endif
+			if (skeletonDataAsset.useCustomZSpacing)
+			{
+				SpineZSpacingUtils.SetSlotZOrder(skeleton.DrawOrder, skeletonDataAsset.ZSlotIndexList);
+			}
+
 			SkeletonRendererInstruction currentInstructions = this.currentInstructions;
 			ExposedList<SubmeshInstruction> workingSubmeshInstructions = currentInstructions.submeshInstructions;
 			MeshRendererBuffers.SmartMesh currentSmartMesh = rendererBuffers.GetNextMesh(); // Double-buffer for performance.
@@ -623,6 +628,7 @@ namespace Spine.Unity {
 				meshGenerator.settings = new MeshGenerator.Settings {
 					pmaVertexColors = this.pmaVertexColors,
 					zSpacing = this.zSpacing,
+					useCustomSpacing = skeletonDataAsset.useCustomZSpacing,
 					useClipping = this.useClipping,
 					tintBlack = this.tintBlack,
 					calculateTangents = this.calculateTangents,
@@ -659,6 +665,7 @@ namespace Spine.Unity {
 				meshGenerator.settings = new MeshGenerator.Settings {
 					pmaVertexColors = this.pmaVertexColors,
 					zSpacing = this.zSpacing,
+					useCustomSpacing = skeletonDataAsset.useCustomZSpacing,
 					useClipping = this.useClipping,
 					tintBlack = this.tintBlack,
 					calculateTangents = this.calculateTangents,

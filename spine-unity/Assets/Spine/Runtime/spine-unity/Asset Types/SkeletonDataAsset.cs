@@ -63,6 +63,13 @@ namespace Spine.Unity {
 		public float defaultMix;
 		public RuntimeAnimatorController controller;
 
+		public List<string> zSlots;
+		[NonSerialized]
+		public List<int> ZSlotIndexList;
+
+		[NonSerialized]
+		public bool useCustomZSpacing;
+
 #if UNITY_EDITOR
 		public static bool errorIfSkeletonFileNullGlobal = true;
 #endif
@@ -229,6 +236,7 @@ namespace Spine.Unity {
 
 			this.InitializeWithData(loadedSkeletonData);
 
+			UpdateZSlots();
 			return skeletonData;
 		}
 
@@ -293,6 +301,22 @@ namespace Spine.Unity {
 				Scale = scale
 			};
 			return json.ReadSkeletonData(input);
+		}
+
+		public void UpdateZSlots()
+		{
+			useCustomZSpacing = zSlots is {Count: > 0};
+			
+			if (!useCustomZSpacing)
+				return;
+
+			ZSlotIndexList = new List<int>(zSlots.Count);
+
+			foreach (string slot in zSlots)
+			{
+				int slotIndex = skeletonData.FindSlot(slot).Index;
+				ZSlotIndexList.Add(slotIndex);
+			}
 		}
 	}
 

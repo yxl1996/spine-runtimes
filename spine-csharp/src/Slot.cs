@@ -47,6 +47,7 @@ namespace Spine {
 		internal ExposedList<float> deform = new ExposedList<float>();
 		internal int attachmentState;
 
+		public int zOrder = -1;
 		public Slot (SlotData data, Bone bone) {
 			if (data == null) throw new ArgumentNullException("data", "data cannot be null.");
 			if (bone == null) throw new ArgumentNullException("bone", "bone cannot be null.");
