@@ -82,6 +82,7 @@ namespace Spine.Unity {
 			public bool useClipping;
 			[Space]
 			[Range(-0.1f, 0f)] public float zSpacing;
+			public bool useCustomSpacing;
 			[Space]
 			[Header("Vertex Data")]
 			public bool pmaVertexColors;
@@ -564,7 +565,7 @@ namespace Spine.Unity {
 					continue;
 				}
 				Attachment attachment = slot.Attachment;
-				float z = zSpacing * slotIndex;
+				float z = settings.useCustomSpacing ? slot.zOrder * zSpacing : slotIndex * zSpacing;
 
 				float[] workingVerts = this.tempVerts;
 				float[] uvs;
@@ -739,7 +740,16 @@ namespace Spine.Unity {
 
 			this.meshBoundsMin = meshBoundsMin;
 			this.meshBoundsMax = meshBoundsMax;
-			meshBoundsThickness = instruction.endSlot * zSpacing;
+			
+			if (settings.useCustomSpacing)
+			{
+				Slot lastSlot = instruction.skeleton.Slots.Items[instruction.endSlot];
+				this.meshBoundsThickness = lastSlot.zOrder * settings.zSpacing;
+			}
+			else
+			{
+				this.meshBoundsThickness = instruction.endSlot * zSpacing;
+			}
 
 			// Trim or zero submesh triangles.
 			int[] currentSubmeshItems = submesh.Items;
@@ -861,7 +871,7 @@ namespace Spine.Unity {
 #endif
 						) continue;
 					Attachment attachment = slot.Attachment;
-					float z = slotIndex * settings.zSpacing;
+					float z = settings.useCustomSpacing ? slot.zOrder * settings.zSpacing : slotIndex * settings.zSpacing;
 
 					RegionAttachment regionAttachment = attachment as RegionAttachment;
 					if (regionAttachment != null) {
@@ -973,10 +983,27 @@ namespace Spine.Unity {
 
 			this.meshBoundsMin = bmin;
 			this.meshBoundsMax = bmax;
-			this.meshBoundsThickness = lastSlotIndex * settings.zSpacing;
 
 			int submeshInstructionCount = instruction.submeshInstructions.Count;
 			submeshes.Count = submeshInstructionCount;
+
+			if (settings.useCustomSpacing)
+			{
+				if (submeshInstructionCount > 0)
+				{
+					SubmeshInstruction lastSubMeshInstruction = instruction.submeshInstructions.Items[submeshInstructionCount - 1];
+					int count = lastSubMeshInstruction.skeleton.Slots.Count;
+					if (lastSubMeshInstruction.endSlot < count)
+					{
+						Slot slot = lastSubMeshInstruction.skeleton.Slots.Items[lastSubMeshInstruction.endSlot];
+						this.meshBoundsThickness =  slot.zOrder * settings.zSpacing;
+					}
+				}
+			}
+			else
+			{
+				this.meshBoundsThickness = lastSlotIndex * settings.zSpacing;
+			}
 
 			// Add triangles
 			if (updateTriangles) {

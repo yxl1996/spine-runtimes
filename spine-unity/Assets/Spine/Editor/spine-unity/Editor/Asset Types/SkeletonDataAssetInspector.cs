@@ -49,11 +49,11 @@ namespace Spine.Unity.Editor {
 	[CustomEditor(typeof(SkeletonDataAsset)), CanEditMultipleObjects]
 	public class SkeletonDataAssetInspector : UnityEditor.Editor {
 		internal static bool showAnimationStateData = true;
-		internal static bool showAnimationList = true;
+		internal static bool showAnimationList = false;
 		internal static bool showSlotList = false;
 		internal static bool showAttachments = false;
 
-		SerializedProperty atlasAssets, skeletonJSON, scale, fromAnimation, toAnimation, duration, defaultMix;
+		SerializedProperty atlasAssets, skeletonJSON, scale, fromAnimation, toAnimation, duration, defaultMix, zSlots;
 		SerializedProperty skeletonDataModifiers;
 		SerializedProperty blendModeMaterials;
 #if SPINE_TK2D
@@ -79,6 +79,8 @@ namespace Spine.Unity.Editor {
 		string TargetAssetGUID { get { return AssetDatabase.AssetPathToGUID(AssetDatabase.GetAssetPath(targetSkeletonDataAsset)); } }
 		string LastSkinKey { get { return TargetAssetGUID + "_lastSkin"; } }
 		string LastSkinName { get { return EditorPrefs.GetString(LastSkinKey, ""); } }
+
+		private Dictionary<int, bool> mSlotZDict = new();
 
 		void OnEnable () {
 			InitializeEditor();
@@ -113,6 +115,7 @@ namespace Spine.Unity.Editor {
 			toAnimation = serializedObject.FindProperty("toAnimation");
 			duration = serializedObject.FindProperty("duration");
 			defaultMix = serializedObject.FindProperty("defaultMix");
+			zSlots = serializedObject.FindProperty("zSlots");
 
 			skeletonDataModifiers = serializedObject.FindProperty("skeletonDataModifiers");
 			blendModeMaterials = serializedObject.FindProperty("blendModeMaterials");
@@ -150,6 +153,20 @@ namespace Spine.Unity.Editor {
 				preview.Initialize(this.Repaint, targetSkeletonDataAsset, this.LastSkinName);
 			}
 
+			foreach (var slotData in targetSkeletonData.Slots)
+			{
+				mSlotZDict.Add(slotData.Index, false);
+			}
+
+			for (int i = 0,count = zSlots.arraySize; i < count; i++)
+			{
+				string slotName = zSlots.GetArrayElementAtIndex(i).stringValue;
+				SlotData slot = targetSkeletonData.FindSlot(slotName);
+				if (slot != null)
+				{
+					mSlotZDict[slot.Index] = true;
+				}
+			}
 		}
 
 		void Clear () {
@@ -531,7 +548,28 @@ namespace Spine.Unity.Editor {
 				Slot[] slotsItems = preview.Skeleton.Slots.Items;
 				for (int i = preview.Skeleton.Slots.Count - 1; i >= 0; i--) {
 					Slot slot = slotsItems[i];
+					EditorGUILayout.BeginHorizontal();
 					EditorGUILayout.LabelField(SpineInspectorUtility.TempContent(slot.Data.Name, Icons.slot));
+					EditorGUI.BeginChangeCheck();
+					mSlotZDict[slot.Data.Index] = EditorGUILayout.ToggleLeft("ZSpacing", mSlotZDict[slot.Data.Index]);
+					if (EditorGUI.EndChangeCheck())
+					{
+						bool value = mSlotZDict[slot.Data.Index];
+						if (value)
+						{
+							if (!targetSkeletonDataAsset.zSlots.Contains(slot.Data.Name))
+							{
+								targetSkeletonDataAsset.zSlots.Add(slot.Data.Name);
+							}
+						}
+						else
+						{
+							targetSkeletonDataAsset.zSlots.Remove(slot.Data.Name);
+						}
+
+						targetSkeletonDataAsset.UpdateZSlots();
+					}
+					EditorGUILayout.EndHorizontal();
 					if (showAttachments) {
 						slotAttachments.Clear();
 						defaultSkinAttachments.Clear();
