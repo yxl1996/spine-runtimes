@@ -30,7 +30,7 @@
 using System;
 
 namespace Spine {
-	public class Skeleton {
+	public partial class Skeleton {
 		static private readonly int[] quadTriangles = { 0, 1, 2, 2, 3, 0 };
 		internal SkeletonData data;
 		internal ExposedList<Bone> bones;
