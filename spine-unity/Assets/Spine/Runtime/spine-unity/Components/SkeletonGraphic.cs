@@ -569,6 +569,8 @@ namespace Spine.Unity {
 		/// from where you can issue such preparation calls.</summary>
 		public event SkeletonRendererDelegate OnMeshAndMaterialsUpdated;
 
+		public bool useCustomDemandLoading;
+
 		public event SkeletonRendererDemandLoadingDelegate OnCustomDemandLoading;
 
 		protected Spine.AnimationState state;
@@ -991,8 +993,8 @@ namespace Spine.Unity {
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
 			{
-				if (OnCustomDemandLoading != null)
-					OnCustomDemandLoading(this);
+				if (useCustomDemandLoading)
+					OnCustomDemandLoading?.Invoke(this);
 				else
 					HandleOnDemandLoading();
 			}
@@ -1114,8 +1116,8 @@ namespace Spine.Unity {
 #if SPINE_OPTIONAL_ON_DEMAND_LOADING
 			if (Application.isPlaying)
 			{
-				if (OnCustomDemandLoading != null)
-					OnCustomDemandLoading(this);
+				if (useCustomDemandLoading)
+					OnCustomDemandLoading?.Invoke(this);
 				else
 					HandleOnDemandLoading();
 			}

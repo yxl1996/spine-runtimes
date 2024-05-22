@@ -69,7 +69,8 @@ namespace Spine.Unity.Editor {
 
 		protected SerializedProperty allowMultipleCanvasRenderers, separatorSlotNames, enableSeparatorSlots,
 			updateSeparatorPartLocation, updateSeparatorPartScale;
-		protected SerializedProperty raycastTarget, maskable;
+		SerializedProperty raycastTarget, maskable;
+		SerializedProperty useCustomDemandLoading;
 
 		readonly GUIContent UseClippingLabel = new GUIContent("Use Clipping",
 			"When disabled, clipping attachments are ignored. This may be used to save performance.");
@@ -422,6 +423,8 @@ namespace Spine.Unity.Editor {
 				rect.x += 35f;
 				SpineInspectorUtility.ToggleLeft(rect, initialFlipY, SpineInspectorUtility.TempContent("Y", tooltip: "initialFlipY"));
 			}
+
+			EditorGUILayout.PropertyField(useCustomDemandLoading);
 
 			EditorGUILayout.Space();
 			EditorGUILayout.LabelField("Animation", EditorStyles.boldLabel);
