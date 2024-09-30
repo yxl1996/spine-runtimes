@@ -33,6 +33,20 @@ namespace Spine.Unity.Editor
 
             return material;
         }
+
+        public static void TrySetMainTexture(Material material, Texture texture)
+        {
+            var mainTex = material.mainTexture;
+            if (mainTex != null)
+            {
+                if (mainTex.name.Replace("_placeholder", "").Equals(texture.name))
+                {
+                    return;
+                }
+            }
+
+            material.mainTexture = texture;
+        }
     }
 
     public partial class SpinePreferences

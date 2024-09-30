@@ -262,6 +262,10 @@ namespace Spine.Unity {
 				return;
 #endif
 			String name = Path.GetFileNameWithoutExtension(path);
+			String placeholdName = atlasAsset.OnDemandTextureLoader != null
+				? atlasAsset.OnDemandTextureLoader.GetPlaceholderTextureName(name)
+				: String.Empty;
+
 			Material material = null;
 			foreach (Material other in atlasAsset.materials) {
 				if (other.mainTexture == null) {
@@ -269,9 +273,7 @@ namespace Spine.Unity {
 					return;
 				}
 				string textureName = other.mainTexture.name;
-				if (textureName == name ||
-					(atlasAsset.OnDemandTextureLoader != null &&
-					textureName == atlasAsset.OnDemandTextureLoader.GetPlaceholderTextureName(name))) {
+				if (textureName == name || (textureName == placeholdName)) {
 					material = other;
 					break;
 				}

@@ -51,50 +51,10 @@ namespace Spine.Unity {
 			get { return textureLoadingMode; }
 			set { textureLoadingMode = value; }
 		}
-		public OnDemandTextureCustomLoader OnDemandTextureLoader {
+		public OnDemandTextureLoader OnDemandTextureLoader {
 			get { return onDemandTextureLoader; }
 			set { onDemandTextureLoader = value; }
 		}
-
-#if UNITY_EDITOR
-		private int mCounter;
-		
-		private void OnEnable()
-		{
-			if (onDemandTextureLoader != null)
-			{
-				onDemandTextureLoader.TextureLoaded += OnTextureLoaded;
-				onDemandTextureLoader.TextureUnloaded += OnTextureUnloaded;
-			}	
-		}
-
-		private void OnDisable()
-		{
-			if (onDemandTextureLoader != null)
-			{
-				onDemandTextureLoader.TextureLoaded -= OnTextureLoaded;
-				onDemandTextureLoader.TextureUnloaded -= OnTextureUnloaded;
-			}
-		}
-		
-		private void OnTextureLoaded(OnDemandTextureCustomLoader loader, Material material)
-		{
-			if (!Application.isPlaying)
-				return;
-
-			mCounter++;
-		}
-		
-		private void OnTextureUnloaded(OnDemandTextureCustomLoader loader, Material material)
-		{
-			if (!Application.isPlaying)
-				return;
-
-			mCounter--;
-			if (mCounter == 0)
-				Debug.Log("Unloaded All Texture Successful");
-		}
-#endif
 
 		public virtual void BeginCustomTextureLoading () {
 			if (onDemandTextureLoader)
@@ -108,17 +68,10 @@ namespace Spine.Unity {
 
 		public virtual void RequireTexturesLoaded (Material material) {
 			if (onDemandTextureLoader)
-				onDemandTextureLoader.RequestLoadMaterialTextures(material);
-		}
-
-		public virtual void AddLoadedTextureRef(Texture placeHolderTexture) {
-			if (onDemandTextureLoader)
-				onDemandTextureLoader.AddLoadedTextureRef(placeHolderTexture);
-		}
-		
-		public virtual void RemoveLoadedTextureRef(Texture targetTexture) {
-			if (onDemandTextureLoader)
-				onDemandTextureLoader.RemoveLoadedTextureRef(targetTexture);
+			{
+				Material overrideMaterial = null;
+				onDemandTextureLoader.RequestLoadMaterialTextures(material,ref overrideMaterial);
+			}
 		}
 
 		public virtual void RequireTextureLoaded (Texture placeholderTexture, ref Texture replacementTexture, System.Action<Texture> onTextureLoaded) {
@@ -127,7 +80,7 @@ namespace Spine.Unity {
 		}
 
 		[SerializeField] protected LoadingMode textureLoadingMode = LoadingMode.Normal;
-		[SerializeField] protected OnDemandTextureCustomLoader onDemandTextureLoader = null;
+		[SerializeField] protected OnDemandTextureLoader onDemandTextureLoader = null;
 #endif
 	}
 }

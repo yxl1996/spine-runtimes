@@ -697,13 +697,15 @@ namespace Spine.Unity.Editor {
 					if (material) {
 						ApplyPMAOrStraightAlphaSettings(material, SpineEditorUtilities.Preferences.textureSettingsReference);
 						if (texture != null)
-							material.mainTexture = texture;
+							AssetUtilityExt.TrySetMainTexture(material,texture);
+							//material.mainTexture = texture;
 						AssetDatabase.CreateAsset(material, materialPath);
 					}
 				} else {
 					vestigialMaterials.Remove(material);
 					if (texture != null)
-						material.mainTexture = texture;
+						AssetUtilityExt.TrySetMainTexture(material,texture);
+						//material.mainTexture = texture;
 					EditorUtility.SetDirty(material);
 					// note: don't call AssetDatabase.SaveAssets() since this would trigger OnPostprocessAllAssets() every time unnecessarily.
 				}
