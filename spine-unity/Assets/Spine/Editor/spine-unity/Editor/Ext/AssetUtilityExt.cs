@@ -18,6 +18,7 @@ namespace Spine.Unity.Editor
                 {
                     parent = templateMaterial
                 };
+                material.RevertAllPropertyOverrides();
 #else
                 material = new Material(templateMaterial);
 #endif
@@ -67,6 +68,9 @@ namespace Spine.Unity.Editor
                         string path = AssetDatabase.GUIDToAssetPath(guid);
                         var mat = AssetDatabase.LoadAssetAtPath<Material>(path);
                         mat.parent = config.TemplateMaterial;
+                        var mainTex = mat.mainTexture;
+                        mat.RevertAllPropertyOverrides();
+                        mat.SetTexture("_MainTex", mainTex);
                     }
                 }
             }
