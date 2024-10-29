@@ -40,7 +40,7 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
 }
 
-val libraryVersion = "4.2.8-SNAPSHOT";
+val libraryVersion = "4.2.8";
 
 tasks.register<Jar>("sourceJar") {
     archiveClassifier.set("sources")
