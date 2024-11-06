@@ -477,8 +477,8 @@ export class SpineDebugRenderer implements ISpineDebugRenderer {
 
 		if (bounds.minX !== Infinity) {
 			debugDisplayObjects.boundingBoxesRect
-			.rect(bounds.minX, bounds.minY, bounds.getWidth(), bounds.getHeight())
-			.stroke({ width: lineWidth, color: this.boundingBoxesRectColor });
+				.rect(bounds.minX, bounds.minY, bounds.getWidth(), bounds.getHeight())
+				.stroke({ width: lineWidth, color: this.boundingBoxesRectColor });
 		}
 
 		const polygons = bounds.polygons;

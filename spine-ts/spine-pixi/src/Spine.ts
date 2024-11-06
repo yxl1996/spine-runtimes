@@ -670,7 +670,7 @@ export class Spine extends Container {
 	 * @param options - Options to configure the Spine game object. See {@link SpineFromOptions}
 	 * @returns {Spine} The Spine game object instantiated
 	 */
-    public static from(options: SpineFromOptions): Spine;
+	public static from (options: SpineFromOptions): Spine;
 
 	/**
 	 * @deprecated use the `from(options: SpineFromOptions)` version.
@@ -689,12 +689,12 @@ export class Spine extends Container {
 	 * @param options - Options to configure the Spine game object
 	 * @returns {Spine} The Spine game object instantiated
 	 */
-	public static from(skeletonAssetName: string, atlasAssetName: string, options?: ISpineOptions): Spine;
+	public static from (skeletonAssetName: string, atlasAssetName: string, options?: ISpineOptions): Spine;
 	public static from (
 		paramOne: string | SpineFromOptions,
-        atlasAssetName?: string,
-        options?: ISpineOptions)
-	: Spine {
+		atlasAssetName?: string,
+		options?: ISpineOptions)
+		: Spine {
 		if (typeof paramOne === "string") {
 			return Spine.oldFrom(paramOne, atlasAssetName!, options);
 		}

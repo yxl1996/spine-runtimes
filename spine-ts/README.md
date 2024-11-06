@@ -19,7 +19,7 @@ For documentation of the core API in `spine-core`, please refer to our [Spine Ru
 
 For documentation of `spine-phaser`, please refer to our [spine-phaser Guide](https://esotericsoftware.com/spine-phaser).
 
-For documentation of `spine-pixi` and `spine-pixi`, please refer to our [spine-pixi Guide](https://esotericsoftware.com/spine-pixi).
+For documentation of `spine-pixi` and `spine-pixi-v8`, please refer to our [spine-pixi Guide](https://esotericsoftware.com/spine-pixi).
 
 For documentation of `spine-canvaskit`, please refer to our [spine-canvaskit Guide](https://esotericsoftware.com/spine-canvaskit).
 

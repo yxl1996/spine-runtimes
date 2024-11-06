@@ -40,7 +40,7 @@ export class BatchableSpineSlot implements DefaultBatchableMeshElement {
 
 	batcherName = 'darkTint';
 
-	topology:Topology = 'triangle-list';
+	topology: Topology = 'triangle-list';
 
 	readonly packAsQuad = false;
 
