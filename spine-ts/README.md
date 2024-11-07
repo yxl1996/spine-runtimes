@@ -10,7 +10,7 @@ up into multiple modules:
 1. `spine-threejs/`, a self-contained [THREE.JS](https://threejs.org/) backend, built on the core classes.
 1. `spine-player/`, a self-contained player to easily display Spine animations on your website, built on the core classes and WebGL backend.
 1. `spine-phaser/`, a [Phaser](https://phaser.io/) backend, built on the core classes.
-1. `spine-pixi/`, a [PixiJS v7](https://pixijs.com/) backend, built on the core classes.
+1. `spine-pixi-v7/`, a [PixiJS v7](https://pixijs.com/) backend, built on the core classes.
 1. `spine-pixi-v8/`, a [PixiJS v8](https://pixijs.com/) backend, built on the core classes.
 
 In most cases, the `spine-player` module is best suited for your needs. Please refer to the [Spine Web Player documentation](https://esotericsoftware.com/spine-player) for more information.
@@ -19,7 +19,7 @@ For documentation of the core API in `spine-core`, please refer to our [Spine Ru
 
 For documentation of `spine-phaser`, please refer to our [spine-phaser Guide](https://esotericsoftware.com/spine-phaser).
 
-For documentation of `spine-pixi` and `spine-pixi-v8`, please refer to our [spine-pixi Guide](https://esotericsoftware.com/spine-pixi).
+For documentation of `spine-pixi-v7` and `spine-pixi-v8`, please refer to our [spine-pixi Guide](https://esotericsoftware.com/spine-pixi).
 
 For documentation of `spine-canvaskit`, please refer to our [spine-canvaskit Guide](https://esotericsoftware.com/spine-canvaskit).
 
@@ -79,7 +79,7 @@ You can include a module in your project via a `<script>` tag from the [unpkg](h
 <script src="https://unpkg.com/@esotericsoftware/spine-phaser@4.2.*/dist/iife/spine-phaser.js"></script>
 
 // spine-pixi
-<script src="https://unpkg.com/@esotericsoftware/spine-pixi@4.2.*/dist/iife/spine-pixi.js"></script>
+<script src="https://unpkg.com/@esotericsoftware/spine-pixi-v7@4.2.*/dist/iife/spine-pixi-v7.js"></script>
 
 // spine-pixi-v8
 <script src="https://unpkg.com/@esotericsoftware/spine-pixi-v8@4.2.*/dist/iife/spine-pixi-v8.js"></script>
@@ -101,7 +101,7 @@ npm install @esotericsoftware/spine-webgl
 npm install @esotericsoftware/spine-player
 npm install @esotericsoftware/spine-threejs
 npm install @esotericsoftware/spine-phaser
-npm install @esotericsoftware/spine-pixi
+npm install @esotericsoftware/spine-pixi-v7
 npm install @esotericsoftware/spine-pixi-v8
 ```
 

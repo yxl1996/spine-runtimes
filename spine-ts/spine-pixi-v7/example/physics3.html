@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <title>spine-pixi</title>
     <script src="https://cdn.jsdelivr.net/npm/pixi.js@7.4.2/dist/pixi.min.js"></script>
-    <script src="../dist/iife/spine-pixi.js"></script>
+    <script src="../dist/iife/spine-pixi-v7.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tweakpane@3.1.9/dist/tweakpane.min.js"></script>
     <link rel="stylesheet" href="../../index.css">
   </head>
@@ -23,24 +23,24 @@
         document.body.appendChild(app.view);
 
         // Pre-load the skeleton data and atlas. You can also load .json skeleton data.
-        PIXI.Assets.add("sackData", "./assets/sack-pro.skel");
-        PIXI.Assets.add("sackAtlas", "./assets/sack-pma.atlas");
-        await PIXI.Assets.load(["sackData", "sackAtlas"]);
+        PIXI.Assets.add("snowglobeData", "./assets/snowglobe-pro.skel");
+        PIXI.Assets.add("snowglobeAtlas", "./assets/snowglobe-pma.atlas");
+        await PIXI.Assets.load(["snowglobeData", "snowglobeAtlas"]);
 
         // Create the spine display object
-        const sack = spine.Spine.from({skeleton: "sackData", atlas: "sackAtlas",
-          scale: 0.2,
+        const snowglobe = spine.Spine.from({skeleton: "snowglobeData", atlas: "snowglobeAtlas",
+          scale: 0.25,
         });
 
         // Center the spine object on screen.
-        sack.x = window.innerWidth / 2;
-        sack.y = window.innerHeight / 2 + sack.getBounds().height / 2;
+        snowglobe.x = window.innerWidth / 2;
+        snowglobe.y = window.innerHeight / 2 + snowglobe.getBounds().height / 4;
 
-        // Set animation "cape-follow-example" on track 0, looped.
-        sack.state.setAnimation(0, "cape-follow-example", true);
+        // Set animation "FOA" on track 0, looped.
+        snowglobe.state.setAnimation(0, "shake", true);
 
         // Add the display object to the stage.
-        app.stage.addChild(sack);
+        app.stage.addChild(snowglobe);
       })();
     </script>
   </body>

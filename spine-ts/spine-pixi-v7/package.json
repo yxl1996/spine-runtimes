@@ -1,5 +1,5 @@
 {
-  "name": "@esotericsoftware/spine-pixi",
+  "name": "@esotericsoftware/spine-pixi-v7",
   "version": "4.2.62",
   "description": "The official Spine Runtimes for the web PixiJS v7.",
   "main": "dist/index.js",
