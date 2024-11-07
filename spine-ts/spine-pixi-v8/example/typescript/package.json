@@ -1,5 +1,5 @@
 {
-    "name": "spine-pixi-v7-ts-example",
+    "name": "spine-pixi-v8-ts-example",
     "description": "Spine pixi ts example",
     "author": "Esoteric Software LLC",
     "license": "LicenseRef-LICENSE",
@@ -9,8 +9,8 @@
         "dev": "npx concurrently \"npx live-server --no-browser\" \"npm run build -- --watch\""
     },
     "dependencies": {
-        "@esotericsoftware/spine-pixi-v7": "~4.2.63",
-        "pixi.js": "^7.2.4"
+        "@esotericsoftware/spine-pixi-v8": "~4.2.63",
+        "pixi.js": "^8.4.0"
     },
     "devDependencies": {
         "esbuild": "0.17.17",
