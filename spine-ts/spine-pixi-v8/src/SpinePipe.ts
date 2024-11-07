@@ -101,7 +101,7 @@ export class SpinePipe implements RenderPipe<Spine> {
 	}
 
 	addRenderable (spine: Spine, instructionSet: InstructionSet) {
-		const gpuSpine = this.gpuSpineData[spine.uid] ||= { slotBatches: {} };
+		const gpuSpine = this.gpuSpineData[spine.uid] ||= { slotBatches: { } };
 
 		const batcher = this.renderer.renderPipes.batch;
 
