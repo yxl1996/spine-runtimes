@@ -505,6 +505,12 @@ export class Spine extends ViewContainer {
 						);
 					}
 
+					// sequences uvs are known only after computeWorldVertices is invoked
+					if (cacheData.uvs.length < attachment.uvs.length) {
+						cacheData.uvs = new Float32Array(attachment.uvs.length);
+					}
+
+					// need to copy because attachments uvs are shared among skeletons using the same atlas
 					fastCopy((attachment.uvs as Float32Array).buffer, cacheData.uvs.buffer);
 
 					const skeleton = slot.bone.skeleton;
