@@ -132,7 +132,7 @@ export async function loadTextureAtlas (
 	const atlas = new TextureAtlas(bufferToUtf8String(await readFile(atlasFile)));
 	const slashIndex = atlasFile.lastIndexOf("/");
 	const parentDir =
-		slashIndex >= 0 ? atlasFile.substring(0, slashIndex + 1) + "/" : "";
+		slashIndex >= 0 ? atlasFile.substring(0, slashIndex + 1) : "";
 	for (const page of atlas.pages) {
 		const texture = await CanvasKitTexture.fromFile(
 			ck,
