@@ -40,7 +40,7 @@ import { BatchableSpineSlot } from './BatchableSpineSlot';
 import { Spine } from './Spine';
 import { MeshAttachment, RegionAttachment } from '@esotericsoftware/spine-core';
 
-const spineBlendModeMap : Record<number, BLEND_MODES> = {
+const spineBlendModeMap: Record<number, BLEND_MODES> = {
 	0: 'normal',
 	1: 'add',
 	2: 'multiply',
@@ -183,15 +183,15 @@ export class SpinePipe implements RenderPipe<Spine> {
 		this.renderer = null as any;
 	}
 
-	private _getSpineData(spine: Spine): GpuSpineDataElement {
+	private _getSpineData (spine: Spine): GpuSpineDataElement {
 		return this.gpuSpineData[spine.uid] || this._initMeshData(spine);
-    }
+	}
 
-	private _initMeshData(spine: Spine): GpuSpineDataElement {
-        this.gpuSpineData[spine.uid] = { slotBatches: { } };
-        spine.on('destroyed', this._destroyRenderableBound);
-        return this.gpuSpineData[spine.uid];
-    }
+	private _initMeshData (spine: Spine): GpuSpineDataElement {
+		this.gpuSpineData[spine.uid] = { slotBatches: {} };
+		spine.on('destroyed', this._destroyRenderableBound);
+		return this.gpuSpineData[spine.uid];
+	}
 }
 
 extensions.add(SpinePipe);
