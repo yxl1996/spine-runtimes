@@ -177,7 +177,7 @@ namespace Spine.Unity.Editor {
 					AssignSkeletonDataAsset(loader, atlasAsset);
 			}
 
-			protected void AssignSkeletonDataAsset(GenericOnDemandTextureLoader<TargetReference, TextureRequest> loader, AtlasAssetBase atlasAsset) {
+			protected void AssignSkeletonDataAsset (GenericOnDemandTextureLoader<TargetReference, TextureRequest> loader, AtlasAssetBase atlasAsset) {
 				string atlasAssetPath = AssetDatabase.GetAssetPath(atlasAsset);
 				string parentFolder = System.IO.Path.GetDirectoryName(atlasAssetPath);
 
