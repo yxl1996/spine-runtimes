@@ -36,8 +36,8 @@ import {
 	ExtensionType,
 	Shader
 } from 'pixi.js';
-import { DarkTintBatchGeometry } from './DarkTintBatchGeometry';
-import { DarkTintShader } from './DarkTintShader';
+import { DarkTintBatchGeometry } from './DarkTintBatchGeometry.js';
+import { DarkTintShader } from './DarkTintShader.js';
 
 let defaultShader: Shader | null = null;
 

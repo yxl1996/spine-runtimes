@@ -42,7 +42,7 @@ import {
 	Ticker,
 	ViewContainer,
 } from 'pixi.js';
-import { ISpineDebugRenderer } from './SpineDebugRenderer';
+import { ISpineDebugRenderer } from './SpineDebugRenderer.js';
 import {
 	AnimationState,
 	AnimationStateData,

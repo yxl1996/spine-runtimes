@@ -39,7 +39,7 @@ import {
 	roundPixelsBitGl,
 	Shader
 } from 'pixi.js';
-import { darkTintBit, darkTintBitGl } from './darkTintBit';
+import { darkTintBit, darkTintBitGl } from './darkTintBit.js';
 
 export class DarkTintShader extends Shader {
 	constructor (maxTextures: number) {

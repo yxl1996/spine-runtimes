@@ -36,8 +36,8 @@ import {
 	type Renderer,
 	type RenderPipe,
 } from 'pixi.js';
-import { BatchableSpineSlot } from './BatchableSpineSlot';
-import { Spine } from './Spine';
+import { BatchableSpineSlot } from './BatchableSpineSlot.js';
+import { Spine } from './Spine.js';
 import { MeshAttachment, RegionAttachment } from '@esotericsoftware/spine-core';
 
 const spineBlendModeMap: Record<number, BLEND_MODES> = {

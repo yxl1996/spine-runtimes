@@ -37,7 +37,7 @@ import {
 	Resolver,
 	TextureSource
 } from 'pixi.js';
-import { SpineTexture } from '../SpineTexture';
+import { SpineTexture } from '../SpineTexture.js';
 import { TextureAtlas } from '@esotericsoftware/spine-core';
 
 import type { AssetExtension, Loader, ResolvedAsset, Texture, UnresolvedAsset } from 'pixi.js';
