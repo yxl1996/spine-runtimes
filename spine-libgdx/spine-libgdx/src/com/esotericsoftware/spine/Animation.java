@@ -2622,6 +2622,11 @@ public class Animation {
 			Sequence sequence = ((HasTextureRegion)slotAttachment).getSequence();
 			if (sequence == null) return;
 
+			if (direction == out) {
+				if (blend == setup) slot.setSequenceIndex(-1);
+				return;
+			}
+
 			float[] frames = this.frames;
 			if (time < frames[0]) {
 				if (blend == setup || blend == first) slot.setSequenceIndex(-1);
