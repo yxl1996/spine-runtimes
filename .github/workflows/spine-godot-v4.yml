@@ -465,7 +465,7 @@ jobs:
 
           if [[ $(echo "$GODOT_MAJOR_MINOR >= 4.3" | bc) -eq 1 ]]; then
             echo "Version >= 4.3. Adding all web_xxx.zip files to template zip."
-            WEB_FILES=(web_nothreads_debug.zip web_nothreads_release.zip web_dlink_debug.zip web_dlink_nothreads_debug.zip web_dlink_release.zip web_dlink_nothreads_release.zip)
+            WEB_FILES=(web_debug.zip web_release.zip web_nothreads_debug.zip web_nothreads_release.zip web_dlink_debug.zip web_dlink_nothreads_debug.zip web_dlink_release.zip web_dlink_nothreads_release.zip)
           else
             echo "Version < 4.3. Adding only web_debug.zip and web_release.zip."
             WEB_FILES=(web_debug.zip web_release.zip)
