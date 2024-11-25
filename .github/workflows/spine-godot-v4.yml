@@ -45,13 +45,6 @@ jobs:
   godot-editor-windows:
     runs-on: windows-2022
     steps:
-      - name: Configure git line endings
-        shell: bash
-        run: |
-          git config --get core.autocrlf
-          git config --global core.autocrlf false
-          echo "* text=auto" > .gitattributes
-
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
