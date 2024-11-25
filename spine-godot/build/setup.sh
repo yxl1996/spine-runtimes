@@ -65,7 +65,7 @@ cp -r ../spine-cpp/spine-cpp spine_godot
 # Apply patch for 4.3-stable, see https://github.com/godotengine/godot/issues/95861/#issuecomment-2486021565
 if [ "$branch" = "4.3-stable" ]; then
     pushd godot
-    cp ../build/thorvg-4.3-stable.patch thirdparty/thorvg/src/common/tvgLock.h
+    git apply ../build/thorvg-4.3-stable.patch
     popd
 fi
 
