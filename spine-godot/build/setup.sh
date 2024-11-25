@@ -45,6 +45,7 @@ fi
 pushd ..
 rm -rf godot
 git clone --depth 1 $repo -b $branch
+
 if [ $dev = "true" ]; then
 	cp build/custom.py godot
 	if [ "$mono" = "true" ]; then
@@ -60,6 +61,14 @@ if [ $dev = "true" ]; then
 	fi
 fi
 cp -r ../spine-cpp/spine-cpp spine_godot
+
+# Apply patch for 4.3-stable, see https://github.com/godotengine/godot/issues/95861/#issuecomment-2486021565
+if [ "$branch" = "4.3-stable" ]; then
+    pushd godot
+    cp ../build/thorvg-4.3-stable.patch thirdparty/thorvg/src/common/tvgLock.h
+    popd
+fi
+
 popd
 
 popd > /dev/null
