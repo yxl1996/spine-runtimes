@@ -211,7 +211,7 @@ class CallbackTextureLoad : public TextureLoader {
 	spine_texture_loader_unload_func unloadCb;
 
 public:
-	CallbackTextureLoad(): loadCb(nullptr), unloadCb(nullptr) {}
+	CallbackTextureLoad() : loadCb(nullptr), unloadCb(nullptr) {}
 
 	void setCallbacks(spine_texture_loader_load_func load, spine_texture_loader_unload_func unload) {
 		loadCb = load;
@@ -233,7 +233,7 @@ spine_atlas spine_atlas_load_callback(const utf8 *atlasData, const utf8 *atlasDi
 	if (!atlasData) return nullptr;
 	int32_t length = (int32_t) strlen(atlasData);
 	callbackLoader.setCallbacks(load, unload);
-	auto atlas = new (__FILE__, __LINE__) Atlas(atlasData, length, (const char *)atlasDir, &callbackLoader, true);
+	auto atlas = new (__FILE__, __LINE__) Atlas(atlasData, length, (const char *) atlasDir, &callbackLoader, true);
 	_spine_atlas *result = SpineExtension::calloc<_spine_atlas>(1, __FILE__, __LINE__);
 	result->atlas = atlas;
 	result->numImagePaths = (int32_t) atlas->getPages().size();

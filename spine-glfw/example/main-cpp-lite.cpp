@@ -36,7 +36,7 @@ uint8_t *read_file(const char *path, int *length) {
 	*length = (int) ftell(file);
 	fseek(file, 0, SEEK_SET);
 
-	uint8_t *data = (uint8_t*)malloc(*length);
+	uint8_t *data = (uint8_t *) malloc(*length);
 	fread(data, 1, *length, file);
 	fclose(file);
 
@@ -44,11 +44,11 @@ uint8_t *read_file(const char *path, int *length) {
 }
 
 void *load_texture(const char *path) {
-	return (void *) (uintptr_t)texture_load(path);
+	return (void *) (uintptr_t) texture_load(path);
 }
 
 void unload_texture(void *texture) {
-    texture_dispose((texture_t)(uintptr_t)texture);
+	texture_dispose((texture_t) (uintptr_t) texture);
 }
 
 int main() {
@@ -62,7 +62,7 @@ int main() {
 	// Load the atlas and the skeleton data
 	int atlas_length = 0;
 	uint8_t *atlas_bytes = read_file("data/spineboy-pma.atlas", &atlas_length);
-	spine_atlas atlas = spine_atlas_load_callback((utf8 *)atlas_bytes, "data/", load_texture, unload_texture);
+	spine_atlas atlas = spine_atlas_load_callback((utf8 *) atlas_bytes, "data/", load_texture, unload_texture);
 	int skeleton_length = 0;
 	uint8_t *skeleton_bytes = read_file("data/spineboy-pro.skel", &skeleton_length);
 	spine_skeleton_data_result result = spine_skeleton_data_load_binary(atlas, skeleton_bytes, skeleton_length);

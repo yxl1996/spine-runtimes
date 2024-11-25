@@ -286,7 +286,7 @@ void renderer_set_viewport_size(renderer_t *renderer, int width, int height) {
 }
 
 void renderer_draw_lite(renderer_t *renderer, spine_skeleton skeleton, bool premultipliedAlpha) {
-	renderer_draw(renderer, (Skeleton*)skeleton, premultipliedAlpha);
+	renderer_draw(renderer, (Skeleton *) skeleton, premultipliedAlpha);
 }
 
 void renderer_draw(renderer_t *renderer, Skeleton *skeleton, bool premultipliedAlpha) {
