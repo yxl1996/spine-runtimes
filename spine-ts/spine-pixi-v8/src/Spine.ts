@@ -268,7 +268,7 @@ export class Spine extends ViewContainer {
 		this._updateAndApplyState(deltaSeconds ?? Ticker.shared.deltaMS / 1000);
 	}
 
-	get bounds () {
+	override get bounds () {
 		if (this._boundsDirty) {
 			this.updateBounds();
 		}
@@ -689,8 +689,7 @@ export class Spine extends ViewContainer {
 
 	protected onViewUpdate () {
 		// increment from the 12th bit!
-		this._didChangeId += 1 << 12;
-
+		this._didViewChangeTick++;
 		this._boundsDirty = true;
 
 		if (this.didViewUpdate) return;
@@ -780,7 +779,7 @@ export class Spine extends ViewContainer {
 		return this._slotsObject[slot.data.name]?.container;
 	}
 
-	private updateBounds () {
+	protected updateBounds () {
 		this._boundsDirty = false;
 
 		this.skeletonBounds ||= new SkeletonBounds();
