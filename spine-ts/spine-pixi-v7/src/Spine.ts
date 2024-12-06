@@ -133,6 +133,7 @@ export class Spine extends Container {
 	public state: AnimationState;
 
 	private darkTint = false;
+	private hasNeverUpdated = true;
 
 	private _debug?: ISpineDebugRenderer | undefined = undefined;
 	public get debug (): ISpineDebugRenderer | undefined {
@@ -214,8 +215,6 @@ export class Spine extends Container {
 		}
 
 		this.autoUpdate = options?.autoUpdate ?? true;
-		this.skeleton.setToSetupPose();
-		this.skeleton.updateWorldTransform(Physics.update);
 	}
 
 	/*
@@ -248,6 +247,8 @@ export class Spine extends Container {
 	}
 
 	protected internalUpdate (_deltaFrame: number, deltaSeconds?: number): void {
+		this.hasNeverUpdated = false;
+
 		// Because reasons, pixi uses deltaFrames at 60fps. We ignore the default deltaFrames and use the deltaSeconds from pixi ticker.
 		const delta = deltaSeconds ?? Ticker.shared.deltaMS / 1000;
 		this.state.update(delta);
@@ -292,6 +293,13 @@ export class Spine extends Container {
 			mesh.visible = false;
 		}
 	}
+
+	protected _calculateBounds(): void {
+		if (this.hasNeverUpdated) {
+			this.internalUpdate(0, 0);
+			this.renderMeshes();
+		}
+    }
 
 	/**
 	 * Check the existence of a mesh for the given slot.
