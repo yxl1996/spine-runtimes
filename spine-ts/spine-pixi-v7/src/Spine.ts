@@ -294,7 +294,7 @@ export class Spine extends Container {
 		}
 	}
 
-	protected _calculateBounds(): void {
+	protected _calculateBounds (): void {
 		if (this.hasNeverUpdated) {
 			this.internalUpdate(0, 0);
 			this.renderMeshes();
