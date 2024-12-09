@@ -299,7 +299,7 @@ export class Spine extends Container {
 			this.internalUpdate(0, 0);
 			this.renderMeshes();
 		}
-    }
+	}
 
 	/**
 	 * Check the existence of a mesh for the given slot.
