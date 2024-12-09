@@ -806,6 +806,20 @@ bool AnimationState::updateMixingFrom(TrackEntry *to, float delta) {
 		return finished;
 	}
 
+	if (to->_nextTrackLast != -1) { // The from entry was applied at least once.
+			bool discard = to->_mixTime == 0 && from->_mixTime == 0; // Discard the from entry when neither have advanced yet.
+			if (to->_mixTime >= to->_mixDuration || discard) {
+				// Require totalAlpha == 0 to ensure mixing is complete or the transition is a single frame or discarded.
+				if (from->_totalAlpha == 0 || to->_mixDuration == 0 || discard) {
+					to->_mixingFrom = from->_mixingFrom;
+					if (from->_mixingFrom) from->_mixingFrom->_mixingTo = to;
+					to->_interruptAlpha = from->_interruptAlpha;
+					_queue->end(from);
+				}
+				return finished;
+			}
+		}
+
 	from->_trackTime += delta * from->_timeScale;
 	to->_mixTime += delta;
 
