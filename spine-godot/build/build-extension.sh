@@ -18,7 +18,7 @@ if [ -f "../godot-cpp/dev" ]; then
 	echo "DEV build"
 fi
 
-if [ $dev == "true" ]; then	
+if [ $dev == "true" ]; then
     options="$options dev_build=true"
 fi
 
@@ -26,18 +26,18 @@ if [ -z $platform ]; then
     echo "Platform: current"
 else
     echo "Platform: $platform"
-    platform="platform=$platform"    
+    platform="platform=$platform"
 fi
 
 cpus=2
 if [ "$OSTYPE" == "msys" ]; then
 	os="windows"
-	cpus=$NUMBER_OF_PROCESSORS		
+	cpus=$NUMBER_OF_PROCESSORS
 elif [[ "$OSTYPE" == "darwin"* ]]; then
 	os="macos"
-	cpus=$(sysctl -n hw.logicalcpu)	
+	cpus=$(sysctl -n hw.logicalcpu)
 	if [ `uname -m` == "arm64" ]; then
-        echo "Would do Apple Silicon specific setup"	
+        echo "Would do Apple Silicon specific setup"
 	fi
 else
 	os="linux"
@@ -47,7 +47,9 @@ fi
 echo "CPUS: $cpus"
 
 pushd ..
-scons -j $cpus $options $platform target=editor
+if [ "$platform" != "ios" ] && [ "$platform" != "android" ] && [ "$platform" != "web" ]; then
+	scons -j $cpus $options $platform target=editor
+fi
 scons -j $cpus $options $platform target=template_debug
 scons -j $cpus $options $platform target=template_release
 popd
