@@ -94,7 +94,7 @@ jobs:
         run: |
           cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
-          SCONS_CACHE=.scons-cache/ scons -j4 platform=linux target=template_debug arch=arm64 use_llvm=no use_lld=no CC=aarch64-linux-gnu-gcc CXX=aarch64-linux-gnu-g++
+          ./build-extension.sh linux arm64
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -162,6 +162,7 @@ jobs:
       - name: Set up Java 17
         uses: actions/setup-java@v4
         with:
+          distribution: temurin
           java-version: 17
 
       - name: Setup Android SDK & NDK
