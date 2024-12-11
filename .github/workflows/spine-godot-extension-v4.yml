@@ -210,12 +210,6 @@ jobs:
           name: gdextension-linux-x86_64-${{ env.GODOT_TAG }}
           path: artifacts/gdextension-linux-x86_64-${{ env.GODOT_TAG }}
 
-      - name: Download linux-arm64 artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: gdextension-linux-arm64-${{ env.GODOT_TAG }}
-          path: artifacts/gdextension-linux-arm64-${{ env.GODOT_TAG }}
-
       - name: Download macos artifact
         uses: actions/download-artifact@v4
         with:
@@ -257,7 +251,6 @@ jobs:
           # Move artifacts to their correct locations
           mv gdextension-windows-$GODOT_TAG/* bin/windows/
           mv gdextension-linux-x86_64-$GODOT_TAG/* bin/linux/
-          mv gdextension-linux-arm64-$GODOT_TAG/* bin/linux/
           mv gdextension-macos-$GODOT_TAG/* bin/macos/macos.framework/
           mv gdextension-ios-$GODOT_TAG/* bin/ios/
           mv gdextension-android-$GODOT_TAG/* bin/android/
