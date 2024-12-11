@@ -75,33 +75,6 @@ jobs:
           name: gdextension-linux-x86_64-${{ env.GODOT_TAG }}
           path: spine-godot/example-v4-extension/bin/linux/*.so
 
-  build-linux-arm64:
-    runs-on: ubuntu-20.04
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup python and scons
-        uses: ./.github/actions/setup-godot-deps-4
-
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install build-essential scons pkg-config gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
-
-      - name: Build GDExtension
-        run: |
-          cd spine-godot/build
-          ./setup-extension.sh $GODOT_TAG $DEV_BUILD
-          ./build-extension.sh linux arm64
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: gdextension-linux-arm64-${{ env.GODOT_TAG }}
-          path: spine-godot/example-v4-extension/bin/linux/*.so
-
   build-macos:
     runs-on: macos-latest
     steps:
@@ -217,7 +190,7 @@ jobs:
           path: spine-godot/example-v4-extension/bin/web/*.wasm
 
   upload-to-s3:
-    needs: [build-windows, build-linux-x86_64, build-linux-arm64, build-macos, build-ios, build-android, build-web]
+    needs: [build-windows, build-linux-x86_64, build-macos, build-ios, build-android, build-web]
     runs-on: ubuntu-latest
 
     steps:
