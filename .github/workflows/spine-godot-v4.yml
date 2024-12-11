@@ -1,4 +1,4 @@
-name: Build spine-godot (Godot 4.x)
+name: Build spine-godot GDExtension (Godot 4.x)
 
 on:
   workflow_call:
@@ -11,21 +11,7 @@ on:
         required: true
         type: string
         default: "Godot version not specified!"
-      godot_mono:
-        required: true
-        type: boolean
-        default: false
-  workflow_dispatch:
-    inputs:
-      godot_tag:
-        required: true
-        type: string
-        default: "Godot tag not specified!"
-      godot_version:
-        required: true
-        type: string
-        default: "Godot version not specified!"
-      godot_mono:
+      dev:
         required: true
         type: boolean
         default: false
@@ -34,15 +20,12 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_EC2_METADATA_DISABLED: true
-  EM_VERSION: 3.1.26
   GODOT_TAG: ${{ inputs.godot_tag }}
   GODOT_VERSION: ${{ inputs.godot_version }}
-  GODOT_MONO: ${{ inputs.godot_mono }}
-  GODOT_MONO_UPLOAD_SUFFIX: ${{ inputs.godot_mono == true && '-mono' || '' }}
+  DEV_BUILD: ${{ inputs.dev }}
 
 jobs:
-
-  godot-editor-windows:
+  build-windows:
     runs-on: windows-2022
     steps:
       - uses: actions/checkout@v3
@@ -52,19 +35,20 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/setup-godot-deps-4
 
-      - name: Build Godot artifact
+      - name: Build GDExtension
         shell: bash
         run: |
-          ./spine-godot/build/setup.sh $GODOT_TAG false $GODOT_MONO
-          ./spine-godot/build/build-v4.sh $GODOT_MONO
+          cd spine-godot/build
+          ./setup-extension.sh $GODOT_TAG $DEV
+          ./build-extension.sh windows
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-windows', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/**/*
+          name: gdextension-windows-${{ env.GODOT_TAG }}
+          path: spine-godot/example-v4-extension/bin/windows/*.dll
 
-  godot-editor-linux:
+  build-linux-x86_64:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -74,93 +58,24 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/setup-godot-deps-4
 
-      - name: Build Godot artifact
-        shell: bash
+      - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libudev-dev libxi-dev libxrandr-dev
-          ./spine-godot/build/setup.sh $GODOT_TAG false $GODOT_MONO
-          ./spine-godot/build/build-v4.sh $GODOT_MONO
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-linux', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/**/*
-
-  godot-editor-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup python and scons
-        uses: ./.github/actions/setup-godot-deps-4
-
-      - name: Build Godot artifact
-        shell: bash
+      - name: Build GDExtension
         run: |
-          ./spine-godot/build/install-macos-vulkan-sdk.sh
-          ./spine-godot/build/setup.sh $GODOT_TAG false $GODOT_MONO
-          ./spine-godot/build/build-v4.sh $GODOT_MONO
-          pushd spine-godot/godot/bin
-          zip -r godot-editor-macos.zip Godot.app
-          popd
+          cd spine-godot/build
+          ./setup-extension.sh $GODOT_TAG $DEV
+          ./build-extension.sh linux
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-macos', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/godot-editor-macos.zip
+          name: gdextension-linux-x86_64-${{ env.GODOT_TAG }}
+          path: spine-godot/example-v4-extension/bin/linux/*.so
 
-  godot-template-ios:
-    runs-on: macos-latest
-    if: ${{ inputs.godot_mono == false }}
-
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup python and scons
-        uses: ./.github/actions/setup-godot-deps-4
-
-      - name: Build Godot artifact
-        run: |
-          ./spine-godot/build/install-macos-vulkan-sdk.sh
-          ./spine-godot/build/setup.sh $GODOT_TAG false
-          ./spine-godot/build/build-templates-v4.sh ios
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-ios', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/ios.zip
-
-  godot-template-macos:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Setup python and scons
-        uses: ./.github/actions/setup-godot-deps-4
-
-      - name: Build Godot artifact
-        run: |
-          ./spine-godot/build/install-macos-vulkan-sdk.sh
-          ./spine-godot/build/setup.sh $GODOT_TAG false $GODOT_MONO
-          ./spine-godot/build/build-templates-v4.sh macos $GODOT_MONO
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-macos', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/macos.zip
-
-  godot-template-linux:
+  build-linux-arm64:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -170,27 +85,25 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/setup-godot-deps-4
 
-      - name: Build Godot artifact
+      - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install build-essential scons pkg-config libx11-dev libxcursor-dev libxinerama-dev libgl1-mesa-dev libglu-dev libasound2-dev libpulse-dev libudev-dev libxi-dev libxrandr-dev
-          ./spine-godot/build/setup.sh $GODOT_TAG false $GODOT_MONO
-          ./spine-godot/build/build-templates-v4.sh linux $GODOT_MONO
+          sudo apt-get install build-essential scons pkg-config gcc-aarch64-linux-gnu g++-aarch64-linux-gnu
 
-      - name: Upload artifacts debug
+      - name: Build GDExtension
+        run: |
+          cd spine-godot/build
+          ./setup-extension.sh $GODOT_TAG $DEV
+          ./build-extension.sh linux arm64
+
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-linux-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/linux_debug.x86_64
+          name: gdextension-linux-arm64-${{ env.GODOT_TAG }}
+          path: spine-godot/example-v4-extension/bin/linux/*.so
 
-      - name: Upload artifacts release
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-linux-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/linux_release.x86_64
-
-  godot-template-windows:
-    runs-on: windows-latest
+  build-macos:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
         with:
@@ -199,40 +112,54 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/setup-godot-deps-4
 
-      - name: Build Godot artifact
-        shell: bash
+      - name: Build GDExtension
         run: |
-          ./spine-godot/build/setup.sh $GODOT_TAG false $GODOT_MONO
-          ./spine-godot/build/build-templates-v4.sh windows $GODOT_MONO
+          cd spine-godot/build
+          ./setup-extension.sh $GODOT_TAG $DEV
+          ./build-extension.sh macos
 
-      - name: Upload artifacts debug
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-windows-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/windows_debug_x86_64.exe
+          name: gdextension-macos-${{ env.GODOT_TAG }}
+          path: spine-godot/example-v4-extension/bin/macos/macos.framework/*
 
-      - name: Upload artifacts release
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-windows-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/windows_release_x86_64.exe
-
-  godot-template-android:
-    runs-on: ubuntu-20.04
-    if: ${{ inputs.godot_mono == false }}
+  build-ios:
+    runs-on: macos-latest
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
 
-      # Azure repositories are not reliable, we need to prevent azure giving us packages.
+      - name: Setup python and scons
+        uses: ./.github/actions/setup-godot-deps-4
+
+      - name: Build GDExtension
+        run: |
+          cd spine-godot/build
+          ./setup-extension.sh $GODOT_TAG $DEV
+          ./build-extension.sh ios
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gdextension-ios-${{ env.GODOT_TAG }}
+          path: spine-godot/example-v4-extension/bin/ios/*.xcframework/**/*
+
+  build-android:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
       - name: Make apt sources.list use the default Ubuntu repositories
         run: |
           sudo rm -f /etc/apt/sources.list.d/*
           sudo cp -f spine-godot/build/sources.lst /etc/apt/sources.list
           sudo apt-get update
 
-      - name: Set up Java 11
+      - name: Set up Java 17
         uses: actions/setup-java@v1
         with:
           java-version: 17
@@ -240,34 +167,21 @@ jobs:
       - name: Setup python and scons
         uses: ./.github/actions/setup-godot-deps-4
 
-      - name: Build Godot artifact
-        shell: bash
+      - name: Build GDExtension
         run: |
-          ./spine-godot/build/setup.sh $GODOT_TAG false
-          ./spine-godot/build/build-templates-v4.sh android
+          cd spine-godot/build
+          ./setup-extension.sh $GODOT_TAG $DEV
+          ./build-extension.sh android
+          ./build-extension.sh android x86_64
 
-      - name: Upload artifacts debug
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-android-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/android_debug.apk
+          name: gdextension-android-${{ env.GODOT_TAG }}
+          path: spine-godot/example-v4-extension/bin/android/*.so
 
-      - name: Upload artifacts release
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-android-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/android_release.apk
-
-      - name: Upload artifacts source
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-android-source', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/android_source.zip
-
-  godot-template-web:
+  build-web:
     runs-on: ubuntu-20.04
-    if: ${{ inputs.godot_mono == false }}
-
     steps:
       - uses: actions/checkout@v3
         with:
@@ -276,274 +190,99 @@ jobs:
       - name: Set up Emscripten latest
         uses: mymindstorm/setup-emsdk@v11
         with:
-          version: ${{env.EM_VERSION}}
-
-      - name: Verify Emscripten setup
-        run: |
-          emcc -v
+          version: 3.1.26
 
       - name: Setup python and scons
         uses: ./.github/actions/setup-godot-deps-4
 
-      - name: Build Godot artifact
+      - name: Build GDExtension
         run: |
-          ./spine-godot/build/setup.sh $GODOT_TAG false
-          ./spine-godot/build/build-templates-v4.sh web
+          cd spine-godot/build
+          ./setup-extension.sh $GODOT_TAG $DEV
+          ./build-extension.sh web
 
-      - name: Upload artifacts debug
+      - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_debug.zip
-
-      - name: Upload artifacts release
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_release.zip
-
-      - name: Upload artifacts no threads debug
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-nothreads-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_nothreads_debug.zip
-
-      - name: Upload artifacts no threads release
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-nothreads-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_nothreads_release.zip
-
-      - name: Upload artifacts dlink debug
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_dlink_debug.zip
-
-      - name: Upload artifacts dlink release
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_dlink_release.zip
-
-      - name: Upload artifacts dlink nothreads debug
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-nothreads-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_dlink_nothreads_debug.zip
-
-      - name: Upload artifacts dlink nothreads release
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-nothreads-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-          path: spine-godot/godot/bin/web_dlink_nothreads_release.zip
+          name: gdextension-web-${{ env.GODOT_TAG }}
+          path: spine-godot/example-v4-extension/bin/web/*.wasm
 
   upload-to-s3:
-    needs: [godot-editor-windows, godot-editor-linux, godot-editor-macos, godot-template-ios, godot-template-macos, godot-template-windows, godot-template-linux, godot-template-android, godot-template-web]
+    needs: [build-windows, build-linux-x86_64, build-linux-arm64, build-macos, build-ios, build-android, build-web]
     runs-on: ubuntu-latest
-    if: ${{ inputs.godot_mono == false }}
 
     steps:
-      - name: Download godot-editor-windows artifact
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Download windows artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-windows', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
+          name: gdextension-windows-${{ env.GODOT_TAG }}
+          path: artifacts/gdextension-windows-${{ env.GODOT_TAG }}
 
-      - name: Download godot-editor-linux artifact
+      - name: Download linux-x86_64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-linux', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
+          name: gdextension-linux-x86_64-${{ env.GODOT_TAG }}
+          path: artifacts/gdextension-linux-x86_64-${{ env.GODOT_TAG }}
 
-      - name: Download godot-editor-macos artifact
+      - name: Download linux-arm64 artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-macos', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
+          name: gdextension-linux-arm64-${{ env.GODOT_TAG }}
+          path: artifacts/gdextension-linux-arm64-${{ env.GODOT_TAG }}
 
-      - name: Download godot-template-ios artifact
+      - name: Download macos artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-ios', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
+          name: gdextension-macos-${{ env.GODOT_TAG }}
+          path: artifacts/gdextension-macos-${{ env.GODOT_TAG }}
 
-      - name: Download godot-template-macos artifact
+      - name: Download ios artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-macos', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
+          name: gdextension-ios-${{ env.GODOT_TAG }}
+          path: artifacts/gdextension-ios-${{ env.GODOT_TAG }}
 
-      - name: Download godot-template-windows-release artifact
+      - name: Download android artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-windows-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
+          name: gdextension-android-${{ env.GODOT_TAG }}
+          path: artifacts/gdextension-android-${{ env.GODOT_TAG }}
 
-      - name: Download godot-template-windows-debug artifact
+      - name: Download web artifact
         uses: actions/download-artifact@v4
         with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-windows-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
+          name: gdextension-web-${{ env.GODOT_TAG }}
+          path: artifacts/gdextension-web-${{ env.GODOT_TAG }}
 
-      - name: Download godot-template-linux-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-linux-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-linux-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-linux-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-android-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-android-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-android-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-android-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-android-source artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-android-source', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-nothreads-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-nothreads-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-nothreads-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-nothreads-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-dlink-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-dlink-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-dlink-nothreads-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-nothreads-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-web-dlink-nothreads-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-web-dlink-nothreads-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Upload artifacts to S3
+      - name: Package and upload artifacts
         shell: bash
         if: env.AWS_ACCESS_KEY_ID != null
         run: |
           BRANCH=${GITHUB_REF#refs/heads/}
           echo "branch: $BRANCH"
-          mv godot.windows.editor.x86_64.exe godot-$BRANCH-$GODOT_TAG.exe
-          mv godot.linuxbsd.editor.x86_64 godot-$BRANCH-$GODOT_TAG
-          zip godot-editor-windows.zip godot-$BRANCH-$GODOT_TAG.exe
-          zip godot-editor-linux.zip godot-$BRANCH-$GODOT_TAG
-          aws s3 cp godot-editor-windows.zip s3://spine-godot/$BRANCH/$GODOT_TAG/
-          aws s3 cp godot-editor-linux.zip s3://spine-godot/$BRANCH/$GODOT_TAG/
-          aws s3 cp godot-editor-macos.zip s3://spine-godot/$BRANCH/$GODOT_TAG/
 
-          echo "$GODOT_VERSION" > version.txt
-          GODOT_MAJOR_MINOR=$(echo "$GODOT_VERSION" | sed -E 's/^([0-9]+\.[0-9]+).*/\1/')
+          cd artifacts
+          # Ensure gdextension file is in root
+          cp ../spine-godot/spine_godot_extension.gdextension ./
 
-          echo "Major.Minor version: $GODOT_MAJOR_MINOR"
+          # Create directories matching the expected structure
+          mkdir -p bin/{windows,linux,macos/macos.framework,ios,android,web}
 
-          if [[ $(echo "$GODOT_MAJOR_MINOR >= 4.3" | bc) -eq 1 ]]; then
-            echo "Version >= 4.3. Adding all web_xxx.zip files to template zip."
-            WEB_FILES=(web_debug.zip web_release.zip web_nothreads_debug.zip web_nothreads_release.zip web_dlink_debug.zip web_dlink_nothreads_debug.zip web_dlink_release.zip web_dlink_nothreads_release.zip)
-          else
-            echo "Version < 4.3. Adding only web_debug.zip and web_release.zip."
-            WEB_FILES=(web_debug.zip web_release.zip)
-          fi
+          # Move artifacts to their correct locations
+          mv gdextension-windows-$GODOT_TAG/* bin/windows/
+          mv gdextension-linux-x86_64-$GODOT_TAG/* bin/linux/
+          mv gdextension-linux-arm64-$GODOT_TAG/* bin/linux/
+          mv gdextension-macos-$GODOT_TAG/* bin/macos/macos.framework/
+          mv gdextension-ios-$GODOT_TAG/* bin/ios/
+          mv gdextension-android-$GODOT_TAG/* bin/android/
+          mv gdextension-web-$GODOT_TAG/* bin/web/
 
-          echo "Web files to include: ${WEB_FILES[@]}"
+          # Create the final zip with branch and tag
+          zip -r ../spine-godot-extension-$BRANCH-$GODOT_TAG.zip spine_godot_extension.gdextension bin/
 
-          zip spine-godot-templates-$BRANCH-$GODOT_TAG.zip ios.zip macos.zip \
-              windows_debug_x86_64.exe windows_release_x86_64.exe \
-              linux_debug.x86_64 linux_release.x86_64 "${WEB_FILES[@]}" \
-              android_release.apk android_debug.apk android_source.zip version.txt
-
-          aws s3 cp spine-godot-templates-$BRANCH-$GODOT_TAG.zip s3://spine-godot/$BRANCH/$GODOT_TAG/spine-godot-templates-$BRANCH-$GODOT_TAG.tpz
-
-  upload-to-s3-mono:
-    needs: [godot-editor-windows, godot-editor-linux, godot-editor-macos, godot-template-macos, godot-template-windows, godot-template-linux]
-    runs-on: ubuntu-latest
-    if: ${{ inputs.godot_mono == true }}
-
-    steps:
-      - name: Download godot-editor-windows artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-windows', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-editor-linux artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-linux', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-editor-macos artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-editor-macos', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-macos artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-macos', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-windows-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-windows-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-windows-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-windows-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-linux-release artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-linux-release', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Download godot-template-linux-debug artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ format('{0}-{1}{2}.zip', 'godot-template-linux-debug', env.GODOT_TAG, env.GODOT_MONO_UPLOAD_SUFFIX) }}
-
-      - name: Upload artifacts to S3
-        shell: bash
-        if: env.AWS_ACCESS_KEY_ID != null
-        run: |
-          BRANCH=${GITHUB_REF#refs/heads/}
-          echo "branch: $BRANCH"
-          ls -lahR
-          mv godot.windows.editor.x86_64.mono.exe godot-$BRANCH-$GODOT_TAG-mono.exe
-          mv godot.linuxbsd.editor.x86_64.mono godot-$BRANCH-$GODOT_TAG-mono
-          zip -r godot-editor-windows-mono.zip godot-$BRANCH-$GODOT_TAG-mono.exe GodotSharp
-          zip -r godot-editor-linux-mono.zip godot-$BRANCH-$GODOT_TAG-mono GodotSharp
-          mv godot-editor-macos.zip godot-editor-macos-mono.zip
-          aws s3 cp godot-editor-windows-mono.zip s3://spine-godot/$BRANCH/$GODOT_TAG/
-          aws s3 cp godot-editor-linux-mono.zip s3://spine-godot/$BRANCH/$GODOT_TAG/
-          aws s3 cp godot-editor-macos-mono.zip s3://spine-godot/$BRANCH/$GODOT_TAG/
-          echo "$GODOT_VERSION.mono" > version.txt
-          zip spine-godot-templates-$BRANCH-$GODOT_TAG-mono.zip macos.zip windows_debug_x86_64.exe windows_release_x86_64.exe linux_debug.x86_64 linux_release.x86_64 version.txt
-          aws s3 cp spine-godot-templates-$BRANCH-$GODOT_TAG-mono.zip s3://spine-godot/$BRANCH/$GODOT_TAG/spine-godot-templates-$BRANCH-$GODOT_TAG-mono.tpz
-
-
-
+          cd ..
+          aws s3 cp spine-godot-extension-$BRANCH-$GODOT_TAG.zip s3://spine-godot/$BRANCH/$GODOT_TAG/
