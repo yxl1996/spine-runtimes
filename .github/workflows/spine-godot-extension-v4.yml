@@ -38,6 +38,7 @@ jobs:
       - name: Build GDExtension
         shell: bash
         run: |
+          cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
           ./build-extension.sh windows
 
@@ -45,7 +46,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-windows-${{ env.GODOT_TAG }}
-          path: example-v4-extension/bin/windows/*.dll
+          path: spine-godot/example-v4-extension/bin/windows/*.dll
 
   build-linux-x86_64:
     runs-on: ubuntu-20.04
@@ -64,6 +65,7 @@ jobs:
 
       - name: Build GDExtension
         run: |
+          cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
           ./build-extension.sh linux
 
@@ -71,7 +73,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-linux-x86_64-${{ env.GODOT_TAG }}
-          path: example-v4-extension/bin/linux/*.so
+          path: spine-godot/example-v4-extension/bin/linux/*.so
 
   build-linux-arm64:
     runs-on: ubuntu-20.04
@@ -90,6 +92,7 @@ jobs:
 
       - name: Build GDExtension
         run: |
+          cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
           ./build-extension.sh linux arm64
 
@@ -97,7 +100,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-linux-arm64-${{ env.GODOT_TAG }}
-          path: example-v4-extension/bin/linux/*.so
+          path: spine-godot/example-v4-extension/bin/linux/*.so
 
   build-macos:
     runs-on: macos-latest
@@ -111,6 +114,7 @@ jobs:
 
       - name: Build GDExtension
         run: |
+          cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
           ./build-extension.sh macos
 
@@ -118,7 +122,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-macos-${{ env.GODOT_TAG }}
-          path: example-v4-extension/bin/macos/macos.framework/*
+          path: spine-godot/example-v4-extension/bin/macos/macos.framework/*
 
   build-ios:
     runs-on: macos-latest
@@ -132,6 +136,7 @@ jobs:
 
       - name: Build GDExtension
         run: |
+          cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
           ./build-extension.sh ios
 
@@ -139,7 +144,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-ios-${{ env.GODOT_TAG }}
-          path: example-v4-extension/bin/ios/*.xcframework/**/*
+          path: spine-godot/example-v4-extension/bin/ios/*.xcframework/**/*
 
   build-android:
     runs-on: ubuntu-20.04
@@ -151,7 +156,7 @@ jobs:
       - name: Make apt sources.list use the default Ubuntu repositories
         run: |
           sudo rm -f /etc/apt/sources.list.d/*
-          sudo cp -f build/sources.lst /etc/apt/sources.list
+          sudo cp -f spine-godot/build/sources.lst /etc/apt/sources.list
           sudo apt-get update
 
       - name: Set up Java 17
@@ -164,6 +169,7 @@ jobs:
 
       - name: Build GDExtension
         run: |
+          cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
           ./build-extension.sh android
           ./build-extension.sh android x86_64
@@ -172,7 +178,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-android-${{ env.GODOT_TAG }}
-          path: example-v4-extension/bin/android/*.so
+          path: spine-godot/example-v4-extension/bin/android/*.so
 
   build-web:
     runs-on: ubuntu-20.04
@@ -191,6 +197,7 @@ jobs:
 
       - name: Build GDExtension
         run: |
+          cd spine-godot/build
           ./setup-extension.sh $GODOT_TAG $DEV
           ./build-extension.sh web
 
@@ -198,7 +205,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gdextension-web-${{ env.GODOT_TAG }}
-          path: example-v4-extension/bin/web/*.wasm
+          path: spine-godot/example-v4-extension/bin/web/*.wasm
 
   upload-to-s3:
     needs: [build-windows, build-linux-x86_64, build-linux-arm64, build-macos, build-ios, build-android, build-web]
@@ -260,7 +267,7 @@ jobs:
 
           cd artifacts
           # Ensure gdextension file is in root
-          cp ../spine_godot_extension.gdextension ./
+          cp ../spine-godot/spine_godot_extension.gdextension ./
 
           # Create directories matching the expected structure
           mkdir -p bin/{windows,linux,macos/macos.framework,ios,android,web}
