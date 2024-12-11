@@ -93,7 +93,7 @@ jobs:
       - name: Build GDExtension
         run: |
           cd spine-godot/build
-          ./setup-extension.sh $GODOT_TAG $DEV
+          ./setup-extension.sh $GODOT_TAG $DEV_BUILD
           ./build-extension.sh linux arm64
 
       - name: Upload artifacts
@@ -179,7 +179,7 @@ jobs:
       - name: Build GDExtension
         run: |
           cd spine-godot/build
-          ./setup-extension.sh $GODOT_TAG $DEV
+          ./setup-extension.sh $GODOT_TAG $DEV_BUILD
           ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/23.2.8568313 ./build-extension.sh android
           ANDROID_NDK_ROOT=$ANDROID_SDK_ROOT/ndk/23.2.8568313 ./build-extension.sh android x86_64
 
