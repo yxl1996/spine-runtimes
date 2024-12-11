@@ -75,7 +75,7 @@ jobs:
           name: gdextension-linux-x86_64-${{ env.GODOT_TAG }}
           path: spine-godot/example-v4-extension/bin/linux/*.so
 
-    build-linux-arm64:
+  build-linux-arm64:
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
