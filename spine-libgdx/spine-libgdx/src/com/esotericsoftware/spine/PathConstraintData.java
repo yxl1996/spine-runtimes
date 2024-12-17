@@ -148,7 +148,8 @@ public class PathConstraintData extends ConstraintData {
 
 	/** Controls how the first bone is positioned along the path.
 	 * <p>
-	 * See <a href="https://esotericsoftware.com/spine-path-constraints#Position-mode">Position mode</a> in the Spine User Guide. */
+	 * See <a href="https://esotericsoftware.com/spine-path-constraints#Position-mode">Position mode</a> in the Spine User
+	 * Guide. */
 	static public enum PositionMode {
 		fixed, percent;
 
