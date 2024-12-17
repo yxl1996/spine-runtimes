@@ -57,19 +57,19 @@ namespace Spine.Unity.Editor {
 		static GUILayoutOption ReloadButtonWidth { get { return reloadButtonWidth = reloadButtonWidth ?? GUILayout.Width(GUI.skin.label.CalcSize(new GUIContent(ReloadButtonString)).x + 20); } }
 		static GUIStyle ReloadButtonStyle { get { return EditorStyles.miniButton; } }
 
-		SerializedProperty material, color;
-		SerializedProperty additiveMaterial, multiplyMaterial, screenMaterial;
-		SerializedProperty skeletonDataAsset, initialSkinName;
-		SerializedProperty startingAnimation, startingLoop, timeScale, freeze,
+		protected SerializedProperty material, color;
+		protected SerializedProperty additiveMaterial, multiplyMaterial, screenMaterial;
+		protected SerializedProperty skeletonDataAsset, initialSkinName;
+		protected SerializedProperty startingAnimation, startingLoop, timeScale, freeze,
 			updateTiming, updateWhenInvisible, unscaledTime, layoutScaleMode, editReferenceRect;
-		SerializedProperty physicsPositionInheritanceFactor, physicsRotationInheritanceFactor, physicsMovementRelativeTo;
-		SerializedProperty initialFlipX, initialFlipY;
-		SerializedProperty meshGeneratorSettings;
-		SerializedProperty useClipping, zSpacing, tintBlack, canvasGroupCompatible, pmaVertexColors, addNormals, calculateTangents, immutableTriangles;
+		protected SerializedProperty physicsPositionInheritanceFactor, physicsRotationInheritanceFactor, physicsMovementRelativeTo;
+		protected SerializedProperty initialFlipX, initialFlipY;
+		protected SerializedProperty meshGeneratorSettings;
+		protected SerializedProperty useClipping, zSpacing, tintBlack, canvasGroupCompatible, pmaVertexColors, addNormals, calculateTangents, immutableTriangles;
 
-		SerializedProperty allowMultipleCanvasRenderers, separatorSlotNames, enableSeparatorSlots,
+		protected SerializedProperty allowMultipleCanvasRenderers, separatorSlotNames, enableSeparatorSlots,
 			updateSeparatorPartLocation, updateSeparatorPartScale;
-		SerializedProperty raycastTarget, maskable;
+		protected SerializedProperty raycastTarget, maskable;
 
 		readonly GUIContent UseClippingLabel = new GUIContent("Use Clipping",
 			"When disabled, clipping attachments are ignored. This may be used to save performance.");
@@ -94,7 +94,7 @@ namespace Spine.Unity.Editor {
 			"Calculates the tangents per frame. Use this if you are using lit shaders (usually with normal maps) that " +
 			"require vertex tangents.");
 		readonly GUIContent ImmutableTrianglesLabel = new GUIContent("Immutable Triangles",
-			"Enable to optimize rendering for skeletons that never change attachment visbility");
+			"Enable to optimize rendering for skeletons that never change attachment visibility");
 
 		readonly GUIContent UnscaledTimeLabel = new GUIContent("Unscaled Time",
 			"If enabled, AnimationState uses unscaled game time (Time.unscaledDeltaTime), " +
@@ -138,7 +138,7 @@ namespace Spine.Unity.Editor {
 			}
 		}
 
-		void OnEnable () {
+		protected virtual void OnEnable () {
 #if NEW_PREFAB_SYSTEM
 			isInspectingPrefab = false;
 #else
@@ -211,7 +211,7 @@ namespace Spine.Unity.Editor {
 #endif
 		}
 
-		void OnDisable () {
+		protected virtual void OnDisable () {
 #if NEWPLAYMODECALLBACKS
 			EditorApplication.playModeStateChanged -= OnPlaymodeChanged;
 #else
@@ -221,14 +221,14 @@ namespace Spine.Unity.Editor {
 		}
 
 #if NEWPLAYMODECALLBACKS
-		void OnPlaymodeChanged (PlayModeStateChange mode) {
+		protected virtual void OnPlaymodeChanged (PlayModeStateChange mode) {
 #else
 		void OnPlaymodeChanged () {
 #endif
 			DisableEditReferenceRectMode();
 		}
 
-		void DisableEditReferenceRectMode () {
+		protected virtual void DisableEditReferenceRectMode () {
 			foreach (UnityEngine.Object c in targets) {
 				SkeletonGraphic component = (SkeletonGraphic)c;
 				component.EditReferenceRect = false;
