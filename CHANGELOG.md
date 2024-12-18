@@ -123,7 +123,7 @@
 
 ### Unity
 
-- **Officially supported Unity versions are 2017.1-2023.1**.
+- **Officially supported Unity versions are 2017.1-6000.0**.
 
 - **Additions**
 
