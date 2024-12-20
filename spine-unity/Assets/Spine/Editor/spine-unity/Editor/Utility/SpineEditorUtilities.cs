@@ -604,11 +604,11 @@ namespace Spine.Unity.Editor {
 			PropertyInfo selectionProperty = animEditorField.FieldType.GetProperty("selection", bindingFlagsInstance);
 			object animEditor = animEditorField.GetValue(animationWindow);
 			if (animEditor == null) return null;
-			object selection = selectionProperty.GetValue(animEditor);
+			object selection = selectionProperty.GetValue(animEditor, null);
 			if (selection == null) return null;
 
 			PropertyInfo animationClipProperty = selection.GetType().GetProperty("animationClip");
-			return animationClipProperty.GetValue(selection) as AnimationClip;
+			return animationClipProperty.GetValue(selection, null) as AnimationClip;
 		}
 
 		public static float GetAnimationTime (UnityEngine.Object animationWindow) {
@@ -619,13 +619,13 @@ namespace Spine.Unity.Editor {
 			FieldInfo animEditorField = AnimationWindowType.GetField("m_AnimEditor", bindingFlagsInstance);
 			object animEditor = animEditorField.GetValue(animationWindow);
 
-			System.Type animEditorFieldType  = animEditorField.FieldType;
+			System.Type animEditorFieldType = animEditorField.FieldType;
 			PropertyInfo stateProperty = animEditorFieldType.GetProperty("state", bindingFlagsInstance);
 			System.Type animWindowStateType = stateProperty.PropertyType;
 			PropertyInfo timeProperty = animWindowStateType.GetProperty("currentTime", bindingFlagsInstance);
 
-			object state = stateProperty.GetValue(animEditor);
-			return (float)timeProperty.GetValue(state);
+			object state = stateProperty.GetValue(animEditor, null);
+			return (float)timeProperty.GetValue(state, null);
 		}
 	}
 }
