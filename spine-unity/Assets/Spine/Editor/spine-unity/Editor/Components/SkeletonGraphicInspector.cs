@@ -126,13 +126,16 @@ namespace Spine.Unity.Editor {
 			get {
 				if (serializedObject.isEditingMultipleObjects) {
 					foreach (UnityEngine.Object c in targets) {
-						SkeletonGraphic component = (SkeletonGraphic)c;
+						SkeletonGraphic component = c as SkeletonGraphic;
+						if (component == null) continue;
 						if (!component.IsValid)
 							return false;
 					}
 					return true;
 				} else {
-					SkeletonGraphic component = (SkeletonGraphic)target;
+					SkeletonGraphic component = target as SkeletonGraphic;
+					if (component == null)
+						return false;
 					return component.IsValid;
 				}
 			}
@@ -230,7 +233,8 @@ namespace Spine.Unity.Editor {
 
 		protected virtual void DisableEditReferenceRectMode () {
 			foreach (UnityEngine.Object c in targets) {
-				SkeletonGraphic component = (SkeletonGraphic)c;
+				SkeletonGraphic component = c as SkeletonGraphic;
+				if (component == null) continue;
 				component.EditReferenceRect = false;
 			}
 		}
@@ -279,8 +283,10 @@ namespace Spine.Unity.Editor {
 					EditorGUILayout.PropertyField(material);
 					if (GUILayout.Button("Detect", EditorStyles.miniButton, GUILayout.Width(67f))) {
 						Undo.RecordObjects(targets, "Detect Material");
-						foreach (UnityEngine.Object skeletonGraphic in targets) {
-							DetectMaterial((SkeletonGraphic)skeletonGraphic);
+						foreach (UnityEngine.Object target in targets) {
+							SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+							if (skeletonGraphic == null) continue;
+							DetectMaterial(skeletonGraphic);
 						}
 					}
 				}
@@ -321,8 +327,10 @@ namespace Spine.Unity.Editor {
 								EditorStyles.miniButton, GUILayout.Width(100f))) {
 
 								Undo.RecordObjects(targets, "Trim Renderers");
-								foreach (UnityEngine.Object skeletonGraphic in targets) {
-									((SkeletonGraphic)skeletonGraphic).TrimRenderers();
+								foreach (UnityEngine.Object target in targets) {
+									SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+									if (skeletonGraphic == null) continue;
+									skeletonGraphic.TrimRenderers();
 								}
 							}
 							EditorGUILayout.EndHorizontal();
@@ -337,8 +345,10 @@ namespace Spine.Unity.Editor {
 										EditorStyles.miniButton, GUILayout.Width(100f))) {
 
 										Undo.RecordObjects(targets, "Detect Blend Mode Materials");
-										foreach (UnityEngine.Object skeletonGraphic in targets) {
-											DetectBlendModeMaterials((SkeletonGraphic)skeletonGraphic);
+										foreach (UnityEngine.Object target in targets) {
+											SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+											if (skeletonGraphic == null) continue;
+											DetectBlendModeMaterials(skeletonGraphic);
 										}
 									}
 									EditorGUILayout.EndHorizontal();
@@ -445,8 +455,10 @@ namespace Spine.Unity.Editor {
 				EditorGUILayout.BeginHorizontal(GUILayout.Height(EditorGUIUtility.singleLineHeight + 5));
 				EditorGUILayout.PrefixLabel("Match RectTransform with Mesh");
 				if (GUILayout.Button("Match", EditorStyles.miniButton, GUILayout.Width(65f))) {
-					foreach (UnityEngine.Object skeletonGraphic in targets) {
-						MatchRectTransformWithBounds((SkeletonGraphic)skeletonGraphic);
+					foreach (UnityEngine.Object target in targets) {
+						SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+						if (skeletonGraphic == null) continue;
+						MatchRectTransformWithBounds(skeletonGraphic);
 					}
 				}
 				EditorGUILayout.EndHorizontal();
@@ -471,7 +483,8 @@ namespace Spine.Unity.Editor {
 
 			if (slotsReapplyRequired && UnityEngine.Event.current.type == EventType.Repaint) {
 				foreach (UnityEngine.Object target in targets) {
-					SkeletonGraphic skeletonGraphic = (SkeletonGraphic)target;
+					SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+					if (skeletonGraphic == null) continue;
 					skeletonGraphic.ReapplySeparatorSlotNames();
 					skeletonGraphic.LateUpdate();
 					SceneView.RepaintAll();
@@ -494,8 +507,10 @@ namespace Spine.Unity.Editor {
 					EditorGUILayout.PropertyField(tintBlack, TintBlackLabel);
 					if (GUILayout.Button("Detect", EditorStyles.miniButton, GUILayout.Width(65f))) {
 						Undo.RecordObjects(targets, "Detect Tint Black");
-						foreach (UnityEngine.Object skeletonGraphic in targets) {
-							DetectTintBlack((SkeletonGraphic)skeletonGraphic);
+						foreach (UnityEngine.Object target in targets) {
+							SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+							if (skeletonGraphic == null) continue;
+							DetectTintBlack(skeletonGraphic);
 						}
 					}
 				}
@@ -503,8 +518,10 @@ namespace Spine.Unity.Editor {
 					EditorGUILayout.PropertyField(canvasGroupCompatible, CanvasGroupCompatibleLabel);
 					if (GUILayout.Button("Detect", EditorStyles.miniButton, GUILayout.Width(65f))) {
 						Undo.RecordObjects(targets, "Detect CanvasGroup Compatible");
-						foreach (UnityEngine.Object skeletonGraphic in targets) {
-							DetectCanvasGroupCompatible((SkeletonGraphic)skeletonGraphic);
+						foreach (UnityEngine.Object target in targets) {
+							SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+							if (skeletonGraphic == null) continue;
+							DetectCanvasGroupCompatible(skeletonGraphic);
 						}
 					}
 				}
@@ -512,8 +529,10 @@ namespace Spine.Unity.Editor {
 					EditorGUILayout.PropertyField(pmaVertexColors, PMAVertexColorsLabel);
 					if (GUILayout.Button("Detect", EditorStyles.miniButton, GUILayout.Width(65f))) {
 						Undo.RecordObjects(targets, "Detect PMA Vertex Colors");
-						foreach (UnityEngine.Object skeletonGraphic in targets) {
-							DetectPMAVertexColors((SkeletonGraphic)skeletonGraphic);
+						foreach (UnityEngine.Object target in targets) {
+							SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+							if (skeletonGraphic == null) continue;
+							DetectPMAVertexColors(skeletonGraphic);
 						}
 					}
 				}
@@ -521,16 +540,20 @@ namespace Spine.Unity.Editor {
 					GUILayout.FlexibleSpace();
 					if (GUILayout.Button("Detect Settings", EditorStyles.miniButton, GUILayout.Width(100f))) {
 						Undo.RecordObjects(targets, "Detect Settings");
-						foreach (UnityEngine.Object skeletonGraphic in targets) {
-							DetectTintBlack((SkeletonGraphic)skeletonGraphic);
-							DetectCanvasGroupCompatible((SkeletonGraphic)skeletonGraphic);
-							DetectPMAVertexColors((SkeletonGraphic)skeletonGraphic);
+						foreach (UnityEngine.Object targets in targets) {
+							SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+							if (skeletonGraphic == null) continue;
+							DetectTintBlack(skeletonGraphic);
+							DetectCanvasGroupCompatible(skeletonGraphic);
+							DetectPMAVertexColors(skeletonGraphic);
 						}
 					}
 					if (GUILayout.Button("Detect Material", EditorStyles.miniButton, GUILayout.Width(100f))) {
 						Undo.RecordObjects(targets, "Detect Material");
-						foreach (UnityEngine.Object skeletonGraphic in targets) {
-							DetectMaterial((SkeletonGraphic)skeletonGraphic);
+						foreach (UnityEngine.Object target in targets) {
+							SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+							if (skeletonGraphic == null) continue;
+							DetectMaterial(skeletonGraphic);
 						}
 					}
 				}
@@ -543,7 +566,8 @@ namespace Spine.Unity.Editor {
 
 		protected bool SkeletonHasMultipleSubmeshes () {
 			foreach (UnityEngine.Object target in targets) {
-				SkeletonGraphic skeletonGraphic = (SkeletonGraphic)target;
+				SkeletonGraphic skeletonGraphic = target as SkeletonGraphic;
+				if (skeletonGraphic == null) continue;
 				if (skeletonGraphic.HasMultipleSubmeshInstructions())
 					return true;
 			}
