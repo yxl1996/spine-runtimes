@@ -157,7 +157,7 @@ export class SpinePipe implements RenderPipe<Spine> {
 		const gpuSpine = this.gpuSpineData[spine.uid];
 
 		spine._validateAndTransformAttachments();
-		
+
 		spine.spineAttachmentsDirty = false;
 		spine.spineTexturesDirty = false;
 
