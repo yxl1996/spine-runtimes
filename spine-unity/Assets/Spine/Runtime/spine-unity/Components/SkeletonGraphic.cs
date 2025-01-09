@@ -129,6 +129,7 @@ namespace Spine.Unity {
 		public bool enableSeparatorSlots = false;
 		[SerializeField] protected List<Transform> separatorParts = new List<Transform>();
 		public List<Transform> SeparatorParts { get { return separatorParts; } }
+		[System.NonSerialized] public List<SubmeshInstruction> separatorPartInstructions = new List<SubmeshInstruction>();
 		public bool updateSeparatorPartLocation = true;
 		public bool updateSeparatorPartScale = false;
 
@@ -869,6 +870,11 @@ namespace Spine.Unity {
 		}
 
 		public void PrepareInstructionsAndRenderers (bool isInRebuild = false) {
+			if (skeletonDataAsset.useCustomZSpacing)
+            {
+                SpineZSpacingUtils.SetSlotZOrder(skeleton.DrawOrder, skeletonDataAsset.ZSlotIndexList);
+            }
+
 			if (!this.allowMultipleCanvasRenderers) {
 				MeshGenerator.GenerateSingleSubmeshInstruction(currentInstructions, skeleton, null);
 				if (canvasRenderers.Count > 0)
@@ -1239,6 +1245,7 @@ namespace Spine.Unity {
 				if (submeshInstructionItem.forceSeparate) {
 					targetSiblingIndex = 0;
 					parent = separatorParts[++separatorSlotGroupIndex];
+					separatorPartInstructions[separatorSlotGroupIndex] = submeshInstructionItem;
 				}
 			}
 			usedRenderersCount = submeshCount;
@@ -1321,6 +1328,7 @@ namespace Spine.Unity {
 				for (int i = separatorParts.Count - 1; i >= 0; --i) {
 					if (separatorParts[i] == null) {
 						separatorParts.RemoveAt(i);
+						separatorPartInstructions.RemoveAt(i);
 					}
 				}
 			}
@@ -1338,6 +1346,7 @@ namespace Spine.Unity {
 				dstTransform.sizeDelta = Vector2.zero;
 
 				separatorParts.Add(go.transform);
+				separatorPartInstructions.Add(default);
 			}
 		}
 
@@ -1365,6 +1374,7 @@ namespace Spine.Unity {
 				for (int i = separatorParts.Count - 1; i >= 0; --i) {
 					if (separatorParts[i] == null) {
 						separatorParts.RemoveAt(i);
+						separatorPartInstructions.RemoveAt(i);
 					}
 				}
 			}

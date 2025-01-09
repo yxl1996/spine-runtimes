@@ -47,6 +47,25 @@ namespace Spine.Unity.Editor
 
             material.mainTexture = texture;
         }
+
+        public static void TrySetLoader(AtlasAssetBase atlasAsset,string folderPath)
+        {
+            if (atlasAsset.OnDemandTextureLoader != null)
+                return;
+
+            string[] loaderAssets = AssetDatabase.FindAssets("t:OnDemandTextureLoader", new[] {folderPath});
+            foreach (string loaderAsset in loaderAssets)
+            {
+                string assetPath = AssetDatabase.GUIDToAssetPath(loaderAsset);
+                OnDemandTextureLoader loader = AssetDatabase.LoadAssetAtPath<OnDemandTextureLoader>(assetPath);
+                if (loader != null)
+                {
+                    atlasAsset.OnDemandTextureLoader = loader;
+                    Debug.Log($"设置atlasAsset的TextureLoader:{loaderAsset}");
+                    break;
+                }
+            }
+        } 
     }
 
     public partial class SpinePreferences

@@ -305,6 +305,10 @@ namespace Spine.Unity {
 
 		public void UpdateZSlots()
 		{
+#if UNITY_EDITOR
+            if (!UnityEngine.Application.isPlaying)
+                return;
+#endif
 			useCustomZSpacing = zSlots is {Count: > 0};
 			
 			if (!useCustomZSpacing)
@@ -317,6 +321,10 @@ namespace Spine.Unity {
 				int slotIndex = skeletonData.FindSlot(slot).Index;
 				ZSlotIndexList.Add(slotIndex);
 			}
+
+#if UNITY_EDITOR
+            UnityEditor.EditorUtility.SetDirty(this);
+#endif
 		}
 	}
 

@@ -99,7 +99,7 @@ namespace Spine.Unity {
 
 	/// <summary>Holds several methods to prepare and generate a UnityEngine mesh based on a skeleton. Contains buffers needed to perform the operation, and serializes settings for mesh generation.</summary>
 	[System.Serializable]
-	public class MeshGenerator {
+	public partial class MeshGenerator {
 		public Settings settings = Settings.Default;
 
 		[System.Serializable]
@@ -797,8 +797,8 @@ namespace Spine.Unity {
 			
 			if (settings.useCustomSpacing)
 			{
-				Slot lastSlot = instruction.skeleton.Slots.Items[instruction.endSlot];
-				this.meshBoundsThickness = lastSlot.zOrder * settings.zSpacing;
+				Slot lastSlot = instruction.skeleton.Slots.Items[instruction.endSlot - 1];
+                this.meshBoundsThickness = lastSlot.zOrder * settings.zSpacing;
 			}
 			else
 			{
@@ -1074,12 +1074,8 @@ namespace Spine.Unity {
 				if (submeshInstructionCount > 0)
 				{
 					SubmeshInstruction lastSubMeshInstruction = instruction.submeshInstructions.Items[submeshInstructionCount - 1];
-					int count = lastSubMeshInstruction.skeleton.Slots.Count;
-					if (lastSubMeshInstruction.endSlot < count)
-					{
-						Slot slot = lastSubMeshInstruction.skeleton.Slots.Items[lastSubMeshInstruction.endSlot];
-						this.meshBoundsThickness =  slot.zOrder * settings.zSpacing;
-					}
+					Slot slot = lastSubMeshInstruction.skeleton.Slots.Items[lastSubMeshInstruction.endSlot - 1];
+                    this.meshBoundsThickness =  slot.zOrder * settings.zSpacing;
 				}
 			}
 			else

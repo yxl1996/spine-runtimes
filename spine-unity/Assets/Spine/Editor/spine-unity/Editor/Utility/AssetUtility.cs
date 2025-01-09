@@ -716,6 +716,7 @@ namespace Spine.Unity.Editor {
 			}
 
 			atlasAsset.materials = populatingMaterials.ToArray();
+			AssetUtilityExt.TrySetLoader(atlasAsset, assetPath);
 
 			for (int i = 0; i < vestigialMaterials.Count; i++)
 				AssetDatabase.DeleteAsset(AssetDatabase.GetAssetPath(vestigialMaterials[i]));

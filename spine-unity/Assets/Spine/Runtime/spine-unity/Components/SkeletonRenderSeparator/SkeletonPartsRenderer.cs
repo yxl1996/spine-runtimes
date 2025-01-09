@@ -66,6 +66,7 @@ namespace Spine.Unity {
 		/// <summary>OnMeshAndMaterialsUpdated is called at the end of LateUpdate after the Mesh and
 		/// all materials have been updated.</summary>
 		public event SkeletonPartsRendererDelegate OnMeshAndMaterialsUpdated;
+		public delegate void SkeletonPartsRendererSharedMaterialDelegate (Material[] sharedMaterials);
 		#endregion
 
 		MeshRendererBuffers buffers;
@@ -94,7 +95,7 @@ namespace Spine.Unity {
 			meshFilter.sharedMesh = null;
 		}
 
-		public void RenderParts (ExposedList<SubmeshInstruction> instructions, int startSubmesh, int endSubmesh) {
+		public void RenderParts (ExposedList<SubmeshInstruction> instructions, int startSubmesh, int endSubmesh, SkeletonPartsRendererSharedMaterialDelegate getUpdatedSharedMaterials) {
 			LazyIntialize();
 
 			// STEP 1: Create instruction
@@ -109,8 +110,22 @@ namespace Spine.Unity {
 				for (int i = 0; i < currentInstructions.submeshInstructions.Count; i++)
 					meshGenerator.AddSubmesh(currentInstructionsSubmeshesItems[i], updateTriangles);
 			} else {
-				meshGenerator.BuildMeshWithArrays(currentInstructions, updateTriangles);
+				meshGenerator.BuildPartsRenderMeshWithArrays(currentInstructions, updateTriangles);
 			}
+
+			if (meshGenerator.settings.zSpacing != 0)
+            {
+                var instruction = currentInstructions.submeshInstructions.Items[0];
+                var pos = transform.localPosition;
+                if(meshGenerator.settings.useCustomSpacing)
+                {
+                    pos.z = instruction.skeleton.DrawOrder.Items[instruction.startSlot].zOrder * meshGenerator.settings.zSpacing;
+                }
+                else
+                {
+                    pos.z = instruction.startSlot * meshGenerator.settings.zSpacing;
+                }  
+            }
 
 			buffers.UpdateSharedMaterials(currentInstructions.submeshInstructions);
 
@@ -124,9 +139,15 @@ namespace Spine.Unity {
 				meshGenerator.FillVertexData(mesh);
 				if (updateTriangles) {
 					meshGenerator.FillTriangles(mesh);
-					meshRenderer.sharedMaterials = buffers.GetUpdatedSharedMaterialsArray();
+                    Material[] sharedMaterials = buffers.GetUpdatedSharedMaterialsArray();
+                    if (getUpdatedSharedMaterials != null)
+                        getUpdatedSharedMaterials(sharedMaterials);
+                    meshRenderer.sharedMaterials = sharedMaterials;
 				} else if (buffers.MaterialsChangedInLastUpdate()) {
-					meshRenderer.sharedMaterials = buffers.GetUpdatedSharedMaterialsArray();
+                    Material[] sharedMaterials = buffers.GetUpdatedSharedMaterialsArray();
+                    if (getUpdatedSharedMaterials != null)
+                        getUpdatedSharedMaterials(sharedMaterials);
+                    meshRenderer.sharedMaterials = sharedMaterials;
 				}
 				meshGenerator.FillLateVertexData(mesh);
 			}

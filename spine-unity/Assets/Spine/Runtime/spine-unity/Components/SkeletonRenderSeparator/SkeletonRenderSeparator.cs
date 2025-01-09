@@ -87,6 +87,7 @@ namespace Spine.Unity {
 		/// <summary>OnMeshAndMaterialsUpdated is called at the end of LateUpdate after the Mesh and
 		/// all materials have been updated.</summary>
 		public event SkeletonRenderer.SkeletonRendererDelegate OnMeshAndMaterialsUpdated;
+		public event SkeletonPartsRenderer.SkeletonPartsRendererSharedMaterialDelegate OnGetSharedMaterial;
 		#endregion
 
 		#region Runtime Instantiation
@@ -250,7 +251,8 @@ namespace Spine.Unity {
 				pmaVertexColors = skeletonRenderer.pmaVertexColors,
 				tintBlack = skeletonRenderer.tintBlack,
 				useClipping = true,
-				zSpacing = skeletonRenderer.zSpacing
+				zSpacing = skeletonRenderer.zSpacing,
+				useCustomSpacing = skeletonRenderer.skeletonDataAsset.useCustomZSpacing
 			};
 
 			ExposedList<SubmeshInstruction> submeshInstructions = instruction.submeshInstructions;
@@ -270,7 +272,7 @@ namespace Spine.Unity {
 					if (assignPropertyBlock)
 						currentRenderer.SetPropertyBlock(copiedBlock);
 					// Render
-					currentRenderer.RenderParts(instruction.submeshInstructions, start, si + 1);
+					currentRenderer.RenderParts(instruction.submeshInstructions, start, si + 1, OnGetSharedMaterial);
 
 					start = si + 1;
 					rendererIndex++;
